@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>◯◯マンション 居住者向けサイト ワイヤーフレーム（西山さん用）</title>
+<style>
+  :root{ --ink:#222; --line:#333; --line2:#888; --ph:#e6e6e6; --ph2:#d8d8d8;
+    --anno-bg:#f2f2f2; --anno-line:#666; --btn:#dcdcdc; }
+  *{ box-sizing:border-box; }
+  body{ font-family:"Meiryo","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;
+    color:var(--ink); background:#fafafa; margin:0; padding:32px 20px 80px; line-height:1.65; -webkit-font-smoothing:antialiased; }
+  .doc{ max-width:1160px; margin:0 auto; }
+  h1{ font-size:20px; border-bottom:2px solid var(--ink); padding-bottom:8px; }
+  .badge{ display:inline-block; border:2px solid var(--ink); padding:3px 12px; font-size:12px; font-weight:bold; margin-left:10px; vertical-align:middle; }
+  h2.page-title{ font-size:17px; margin:56px 0 4px; background:var(--ink); color:#fff; display:inline-block; padding:6px 14px; }
+  .meta{ font-size:12px; color:#555; }
+  .rulebox{ border:1px solid var(--line2); background:#fff; padding:14px 16px; font-size:12.5px; margin:16px 0 8px; }
+  .rulebox b{ font-size:13px; } .rulebox ul{ margin:8px 0 0; padding-left:18px; } .rulebox li{ margin:5px 0; }
+  .tonmana{ border:1px solid var(--line2); background:#fff; padding:14px 16px; font-size:12.5px; margin:12px 0; }
+  .tonmana a{ color:#000; }
+  .implbox{ border:2px solid var(--ink); background:#f0f0f0; padding:14px 16px; font-size:12.5px; margin:12px 0; }
+  .implbox h4{ margin:0 0 8px; font-size:13.5px; }
+  .legend{ font-size:12px; color:#555; margin:6px 0 0; }
+  .frames{ display:flex; gap:40px; align-items:flex-start; flex-wrap:wrap; margin-top:18px; }
+  .frame-label{ font-size:12px; font-weight:bold; color:#444; margin-bottom:6px; letter-spacing:.05em; }
+  .sp{ width:360px; } .pc{ width:680px; }
+  .screen{ border:2px solid var(--line); background:#fff; }
+  .sec{ border-bottom:1px dashed var(--line2); padding:14px 14px; position:relative; }
+  .sec:last-child{ border-bottom:none; }
+  .kicker{ font-size:10.5px; letter-spacing:.12em; color:#777; }
+  .ph{ background:repeating-linear-gradient(135deg,var(--ph),var(--ph) 6px,var(--ph2) 6px,var(--ph2) 12px);
+    border:1px solid var(--line2); display:flex; align-items:center; justify-content:center; color:#666; font-size:11px; text-align:center; }
+  .btn{ display:inline-block; border:1.5px solid var(--line); background:var(--btn); padding:9px 16px; font-size:13px; text-align:center; font-weight:bold; }
+  .btn.block{ display:block; }
+  .cta{ display:block; border:1.5px solid var(--line); background:#efefef; padding:8px 14px; font-size:12px; font-weight:bold; text-align:center; margin-top:10px; }
+  .cta.inline{ display:inline-block; margin-top:8px; }
+  .field{ border:1px solid var(--line); background:#fff; padding:9px 10px; font-size:12px; color:#999; }
+  .field.label{ color:#333; } .ta{ min-height:60px; }
+  .radio{ display:inline-block; border:1px solid var(--line); padding:6px 10px; font-size:11.5px; margin:0 6px 6px 0; }
+  .radio.on{ background:#e2e2e2; font-weight:bold; }
+  .chip{ display:inline-block; border:1px solid var(--line2); border-radius:20px; padding:2px 10px; font-size:11px; margin:0 4px 4px 0; }
+  .chip.on{ background:var(--ink); color:#fff; border-color:var(--ink); }
+  .small{ font-size:11px; color:#666; } .tiny{ font-size:10px; color:#888; }
+  .site-head{ border-bottom:2px solid var(--line); padding:12px 14px; display:flex; justify-content:space-between; align-items:center; }
+  .logo{ font-weight:bold; font-size:13px; }
+  .navrow{ display:flex; gap:14px; font-size:12px; flex-wrap:wrap; }
+  .navrow span{ border-bottom:1px solid #bbb; padding-bottom:2px; }
+  .hamburger{ font-size:18px; letter-spacing:2px; }
+  .acc{ border:1px solid var(--line2); margin:6px 0; }
+  .acc .q{ display:flex; justify-content:space-between; align-items:center; padding:9px 11px; font-size:12px; font-weight:bold; background:#f4f4f4; }
+  .acc .a{ padding:9px 11px; font-size:11.5px; color:#444; border-top:1px solid #e2e2e2; }
+  .acc .sign{ font-size:14px; }
+  .post{ display:flex; gap:10px; padding:9px 0; border-bottom:1px solid #eee; }
+  .post .date{ font-size:11px; color:#666; white-space:nowrap; min-width:74px; }
+  .post .cat{ font-size:10px; border:1px solid var(--line2); padding:1px 6px; white-space:nowrap; align-self:flex-start; }
+  .post .ttl{ font-size:12.5px; }
+  .pin{ border:1.5px solid var(--line); padding:10px; background:#f7f7f7; }
+  .pin .pinlabel{ font-size:10px; border:1px solid #999; padding:1px 6px; margin-right:6px; }
+  .vgrid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .pc .vgrid{ grid-template-columns:1fr 1fr 1fr; }
+  .vcard .thumb{ height:70px; } .vcard .vt{ font-size:11px; margin-top:4px; }
+  .doclist .row{ display:flex; gap:8px; align-items:center; padding:8px 0; border-bottom:1px solid #eee; font-size:11.5px; }
+  .doclist .ftype{ border:1px solid var(--line2); padding:1px 5px; font-size:10px; }
+  .doclist .dl{ margin-left:auto; border:1.5px solid var(--line); padding:3px 10px; font-size:11px; }
+  .pager{ display:flex; gap:6px; justify-content:center; margin-top:12px; }
+  .pager span{ border:1px solid var(--line2); padding:3px 9px; font-size:11px; }
+  .pager span.on{ background:var(--ink); color:#fff; }
+  .steps{ display:flex; gap:8px; font-size:11px; margin:8px 0; }
+  .steps .st{ border:1px solid var(--line2); padding:4px 10px; } .steps .st.on{ background:var(--ink); color:#fff; }
+  .flowpage{ border:1px solid var(--line2); padding:12px; margin:8px 0; background:#fbfbfb; }
+  .flowpage h5{ margin:0 0 6px; font-size:12px; }
+  .pcnote{ border:1px dashed var(--line2); background:#f7f7f7; padding:10px 12px; font-size:11.5px; color:#555; }
+  .m{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border:1.5px solid var(--anno-line);
+    border-radius:50%; font-size:11px; font-weight:bold; color:#000; background:#fff; vertical-align:middle; margin-left:6px; }
+  .anno{ border:1px solid var(--anno-line); background:var(--anno-bg); border-left:5px solid var(--anno-line); padding:14px 16px; margin-top:16px; font-size:12.5px; }
+  .anno h4{ margin:0 0 8px; font-size:13px; } .anno ol{ margin:0; padding-left:0; list-style:none; }
+  .anno li{ margin:0 0 7px; padding-left:26px; position:relative; }
+  .anno li .num{ position:absolute; left:0; top:1px; width:18px; height:18px; border:1.5px solid var(--anno-line);
+    border-radius:50%; font-size:11px; font-weight:bold; text-align:center; line-height:16px; background:#fff; }
+  footer{ margin-top:60px; font-size:11px; color:#777; border-top:1px solid var(--line2); padding-top:12px; }
+  .confirm{ border:1px solid var(--line2); background:#fff; padding:12px 16px; font-size:12px; margin-top:14px; }
+  .confirm h4{ margin:0 0 6px; font-size:13px; } .confirm ul{ margin:0; padding-left:18px; } .confirm li{ margin:4px 0; }
+  .rev{ color:#c00; font-weight:bold; }
+  .revbox{ border:2px solid #c00; background:#fff; padding:12px 16px; font-size:12.5px; margin:14px 0; }
+  .revbox h4{ margin:0 0 6px; font-size:13px; color:#c00; }
+  .revbox ul{ margin:6px 0 0; padding-left:18px; } .revbox li{ margin:4px 0; }
+  .revtag{ display:inline-block; background:#c00; color:#fff; font-size:10px; font-weight:bold; padding:1px 6px; margin-right:5px; vertical-align:middle; border-radius:2px; }
+</style></head><body><div class="doc">
+<h1>◯◯マンション 大規模修繕工事 居住者専用サイト ／ ワイヤーフレーム<span class="badge">西山さん用</span></h1>
+<p class="meta">WEB BUTLER 佐藤宗一郎　｜　対象：ログイン前トップ／ログイン前問い合わせ／会員トップ／工事の計画／Q&amp;A／ご意見の窓口／お知らせ一覧　｜　2026.07.01</p>
+
+  <div class="rulebox">
+    <b>この資料の見方</b>
+    <ul>
+      <li>こちらはワイヤーフレーム（設計の下書き）です。</li>
+      <li>「何を・どこに・どの順で置くか」を確認するための設計図となります。</li>
+      <li>実際の見た目（色・写真・フォント）は次のデザイン工程で作り込みます。</li>
+      <li>掲載しているテキストは本番でそのまま使える想定の文面です（物件名など「◯◯」部分は物件ごとに差し替え）。<br>文言のご要望はこの段階でいただけると助かります。</li>
+      <li><span class="m">1</span> のような丸数字は注釈で、各ページ下に「なぜこうしたか」をまとめています。</li>
+    </ul>
+  </div>
+
+  <div class="tonmana">
+    <b>デザインのトンマナ（次工程の方向性）</b><br>
+    信頼感・見やすさ・住民の方が迷わない分かりやすさを軸に、落ち着いた配色と広めの余白で仕上げる想定です。参考として下記のイメージを踏襲します。<br>
+    ・株式会社MRC：<a href="https://mrc-archi.com/">https://mrc-archi.com/</a><br>
+    ・リノプラ：<a href="https://mrc-archi.com/renoplat/">https://mrc-archi.com/renoplat/</a><br>
+    ・ニューサツ：<a href="https://bestreform.jp/">https://bestreform.jp/</a>
+  </div>
+
+  <div class="implbox">
+    <h4>実装方針（西山さん向け・重要）</h4>
+    <b>「型を作り、MRC様が自身で物件を増やせる」ことを最優先に設計してください。</b><br>
+    2棟目以降は、MRC様が既存サイトを<b>複製（コピー）→ 物件名・写真・問い合わせ種別と通知先・ID等を差し替える</b>だけで新規物件が立ち上がる運用を想定しています。<br>
+    ・WordPressマルチサイトで1サイトを雛形とし、複製で横展開できる構成。<br>
+    ・物件依存の値（物件名・ロゴ・問い合わせ種別／通知先・ドメイン・noindex設定等）はハードコーディングせず、管理画面から変更可能に。<br>
+    ・非エンジニアのMRC様が運用できるよう、複製〜差し替えの手順書提供を前提とした作りにしてください。<br>
+    ・【確定要望】ページ・メニューの物件ごとの出し分けは、データ駆動の自動ではなく<b>MRCの手動ON/OFF</b>。管理画面「物件基本設定」に、ページごとの「このページを公開（ON/OFF）」「メニューに表示（ON/OFF）」を手動切替できるラジオを設置（実装イメージは末尾の参考画面）。
+  </div>
+<p class="legend">凡例：　斜線ボックス＝画像／写真が入る場所　｜　枠線ボックス＝ボタン・入力欄　｜　▷付きボタン＝別ページへのリンク（CTA）　｜　破線＝セクションの区切り</p>
+  <div class="revbox">
+    <h4>今回の修正（2026.07.06 更新）</h4>
+    <span class="rev">赤字</span>と「<span class="revtag">7/6</span>」が今回の修正箇所です。御社ご回答を反映しました。
+    <ul>
+      <li>表記を「大規模修繕工事」に統一しました（サイト全体・個別マークは省略）。</li>
+      <li>「工事の計画」の今後の流れを修正：<span class="rev">施工会社の選定 → 総会での決議（工事請負契約の承認）</span>の順に。</li>
+      <li>Q&amp;Aを1問追加（バルコニー調査の立ち会い）。Q&amp;Aは物件ごとにMRC様側で追加・編集できる仕様。</li>
+      <li>「工事の計画」の掲載資料を実際の資料名に更新（建物調査診断報告書・住民説明会資料 ほか、いずれもPDF）。</li>
+      <li>動画：YouTube限定公開で配信（録画・アップロードはMRC様が担当）。</li>
+      <li>ご意見の窓口の送信先：<span class="rev">着工前は株式会社MRC・着工後は施工会社</span>（種別は現状のまま）。</li>
+    </ul>
+  </div>
+
+  <h2 class="page-title">1. ログイン前トップ（公開ゾーン・1ページ完結）</h2>
+  <p class="small">説明・ログイン・はじめての方へ・お問い合わせを1画面に統合。「はじめての方へ」はタップで開閉できる形式。<span class="m">1</span></p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示（主）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション<br><span class="tiny">大規模修繕工事 居住者専用サイト</span></div></div>
+        <div class="sec"><div class="ph" style="height:120px;">メインビジュアル<br>（建物外観など・フリー素材で仮組み）</div></div>
+        <div class="sec">
+          <div class="kicker">サイトの説明</div>
+          <p style="font-size:13px; margin:6px 0;">大規模修繕工事の計画状況を、いつでもご確認いただけます</p>
+          <p class="small">このサイトは、◯◯マンションにお住まいの皆さまへ、大規模修繕工事の計画に関するお知らせ・スケジュール・資料などをお届けする、居住者専用のサイトです。掲示板を見に行かなくても、スマートフォンやパソコンからいつでもご確認いただけます。</p>
+        </div>
+        <div class="sec">
+          <div class="kicker">居住者専用ログイン<span class="m">2</span></div>
+          <div style="margin-top:8px;">
+            <div class="field label" style="margin-bottom:6px;">ID</div>
+            <div class="field label" style="margin-bottom:10px;">パスワード</div>
+            <div class="btn block">ログイン</div>
+            <p class="tiny" style="margin-top:8px;">ID・パスワードは、書面（またはQRコード）でお配りしています。</p>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="kicker">はじめての方へ（タップで開閉）<span class="m">3</span></div>
+          <div class="acc"><div class="q">ID・パスワードはどこでもらえますか？<span class="sign">−</span></div>
+            <div class="a">各住戸のポストに配布した書面（またはQRコード）に記載しています。お手元にない場合は、下の「お問い合わせ」からご連絡ください。</div></div>
+          <div class="acc"><div class="q">ログインのしかた<span class="sign">−</span></div>
+            <div class="a">上の「居住者専用ログイン」に、配布したIDとパスワードを入力し「ログイン」を押してください。</div></div>
+          <div class="acc"><div class="q">ログインできないとき<span class="sign">−</span></div>
+            <div class="a">まずID・パスワードの打ち間違い（大文字・小文字、全角・半角）をご確認ください。それでもログインできない場合は、下の「お問い合わせ」からご連絡ください。担当より確認のうえご案内します。</div></div>
+          <div class="acc"><div class="q">家族や同居の方も見られますか？<span class="sign">−</span></div>
+            <div class="a">はい。1つの住戸につき、同じID・パスワードでご家族・同居の方もご利用いただけます。IDは住戸ごとにお配りしています。</div></div>
+        </div>
+        <div class="sec">
+          <div class="kicker">お問い合わせ<span class="m">4</span></div>
+          <p class="small" style="margin:6px 0;">ログインやIDについてのお問い合わせはこちら。工事内容など計画に関するご質問は、ログイン後の「ご意見の窓口」からお願いします。</p>
+          <div class="cta">お問い合わせフォームへ ▷</div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC　｜　© ◯◯マンション 大規模修繕工事 居住者専用サイト</p></div>
+      </div>
+    </div>
+    <div class="pc">
+      <div class="frame-label">▎PC表示（はじめての方へ・お問い合わせは縦積み）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション　<span class="tiny">大規模修繕工事 居住者専用サイト</span></div>
+          <div class="navrow"><span>サイトについて</span><span>はじめての方へ</span><span>お問い合わせ</span></div></div>
+        <div class="sec" style="display:flex; gap:16px;">
+          <div class="ph" style="height:200px; flex:1.3;">メインビジュアル（建物外観など・フリー素材で仮組み）</div>
+          <div style="flex:1; border:1.5px solid var(--line); padding:14px;">
+            <div class="kicker">居住者専用ログイン<span class="m">2</span></div>
+            <div class="field label" style="margin:8px 0 6px;">ID</div>
+            <div class="field label" style="margin-bottom:10px;">パスワード</div>
+            <div class="btn block">ログイン</div>
+            <p class="tiny" style="margin-top:8px;">ID・パスワードは書面（QRコード）で配布。</p>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="kicker">サイトの説明</div>
+          <p style="font-size:14px; margin:6px 0;">大規模修繕工事の計画状況を、いつでもご確認いただけます</p>
+          <p class="small">このサイトは、◯◯マンションにお住まいの皆さまへ、大規模修繕工事の計画に関するお知らせ・スケジュール・資料などをお届けする、居住者専用のサイトです。掲示板を見に行かなくても、スマートフォンやパソコンからいつでもご確認いただけます。</p>
+        </div>
+        <div class="sec">
+          <div class="kicker">はじめての方へ（タップで開閉）<span class="m">3</span></div>
+          <div class="acc"><div class="q">ID・パスワードはどこでもらえますか？<span class="sign">−</span></div>
+            <div class="a">各住戸のポストに配布した書面（QRコード）に記載しています。お手元にない場合は下のお問い合わせへ。</div></div>
+          <div class="acc"><div class="q">ログインのしかた<span class="sign">＋</span></div></div>
+          <div class="acc"><div class="q">ログインできないとき<span class="sign">＋</span></div></div>
+          <div class="acc"><div class="q">家族や同居の方も見られますか？<span class="sign">＋</span></div></div>
+        </div>
+        <div class="sec">
+          <div class="kicker">お問い合わせ<span class="m">4</span></div>
+          <p class="small" style="margin:6px 0;">ログインやIDについてのお問い合わせ窓口。計画に関する質問はログイン後の窓口へ。</p>
+          <div class="cta inline">お問い合わせフォームへ ▷</div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC　｜　© ◯◯マンション 大規模修繕工事 居住者専用サイト</p></div>
+      </div>
+    </div>
+  </div>
+<div class="anno"><h4>ログイン前トップ 注釈（実装観点）</h4><ol><li><span class="num">1</span>公開側は1ページ完結。noindex。個別URL配布前提。セクションはアンカー遷移。</li><li><span class="num">2</span>ログインは住民用1系統のみ表示。リノプラ等の別認証を同一画面に出さない。会員ゾーンはログインゲートで保護。</li><li><span class="num">3</span>「はじめての方へ」はアコーディオンでページ内実装。</li><li><span class="num">4</span>ログイン前問い合わせはサイト・ID用途に限定。会員の種別振り分けフォームとは別扱い・別通知先。</li><li><span class="num">—</span>noindex／常時SSL。物件名・写真・ドメインは物件依存値として管理画面から変更可能に（複製運用のため）。</li></ol></div>
+  <h2 class="page-title">1-b. お問い合わせ（ログイン前・専用ページ）</h2>
+  <p class="small">上のトップ「お問い合わせフォームへ」から遷移。ログイン・IDに関する簡易フォーム。種別振り分けはなし（＝すべて運営へ）。<span class="m">6</span></p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示：入力</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div></div>
+        <div class="sec">
+          <p style="font-size:15px; font-weight:bold; margin:4px 0;">お問い合わせ</p>
+          <p class="small">ログイン・IDについてのお問い合わせ窓口です。工事や計画に関するご質問は、ログイン後の「ご意見の窓口」からお願いします。</p>
+          <div class="steps"><span class="st on">1 入力</span><span class="st">2 確認</span><span class="st">3 完了</span></div>
+        </div>
+        <div class="sec">
+          <p class="small" style="font-weight:bold;">お名前（任意）</p><div class="field" style="margin:4px 0;">　</div>
+          <p class="small" style="font-weight:bold;">部屋番号（任意）</p><div class="field" style="margin:4px 0;">　</div>
+          <p class="small" style="font-weight:bold;">ご連絡先（メールなど・任意）</p><div class="field" style="margin:4px 0;">　</div>
+          <p class="small" style="font-weight:bold;">お問い合わせ内容（必須）</p><div class="field ta" style="margin:4px 0;">　</div>
+          <div class="btn block" style="margin-top:10px;">入力内容を確認する</div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC</p></div>
+      </div>
+    </div>
+    <div class="pc" style="width:360px;">
+      <div class="frame-label">▎補足</div>
+      <div class="pcnote">ログイン後の「ご意見の窓口」（画面6）との違い：<br>・こちらは<b>種別なし</b>（ログイン・IDの問い合わせ＝送り先は運営で固定）。<br>・確認→完了の流れは画面6と同じ。<br><br>ログイン前の窓口を分けているのは、工事の問い合わせを住民のログイン前に受けないため（窓口を混在させない）。</div>
+    </div>
+  </div>
+<div class="anno"><h4>お問い合わせ（ログイン前）注釈（実装観点）</h4><ol><li><span class="num">6</span>ログイン前の簡易フォーム。種別分岐なし＝送信先は運営（サイト管理者）固定。入力→確認→完了はフォームプラグイン等。reCAPTCHA等スパム対策。会員側の種別分岐フォーム（画面6）とはフォーム定義を分ける。</li></ol></div>
+  <h2 class="page-title">2. 会員ページトップ（ログイン後・住民専用）</h2>
+  <p class="small">掲示板イメージ。<b>縦一列</b>で上から「新着」→「資料」→「動画」→「Q&amp;A」→「ご意見の窓口」の使用頻度順。各セクションは〈プレビュー＋一覧CTA〉に統一。</p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示（主）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div><div class="hamburger">≡</div></div>
+        <div class="sec" style="padding:8px 14px;"><span class="tiny">メニュー（≡内）：お知らせ ／ 工事の計画 ／ 資料ダウンロード ／ 動画アーカイブ ／ Q&amp;A ／ ご意見の窓口 ／ ログアウト</span><span class="m">6b</span></div>
+        
+        <div class="sec"><div class="pin"><span class="pinlabel">固定</span><b class="ttl" style="font-size:12.5px;">工事の計画 ― なぜ大規模修繕工事を行うのか</b>
+          <p class="small" style="margin:6px 0 8px;">工事の目的や進め方をご案内します。くわしい内容は説明会の資料でご確認いただけます。</p>
+          <div class="cta inline">詳しくはこちら ▷</div></div></div>
+        <div class="sec">
+          <div class="kicker">新着（掲示板）<span class="m">8</span></div>
+          <div style="margin:8px 0;"><span class="chip on">すべて</span><span class="chip">お知らせ</span><span class="chip">スケジュール</span><span class="chip">工事の計画</span></div>
+          <div class="post"><span class="date">2026.07.15</span><span class="cat">お知らせ</span><span class="ttl">第1回 住民説明会の開催について</span></div>
+          <div class="post"><span class="date">2026.07.10</span><span class="cat">スケジュール</span><span class="ttl">今後の予定を更新しました（8月の総会日程 ほか）</span></div>
+          <div class="post"><span class="date">2026.07.05</span><span class="cat">工事の計画</span><span class="ttl">建物調査・診断の結果についてのご報告</span></div>
+          <div class="post"><span class="date">2026.06.28</span><span class="cat">お知らせ</span><span class="ttl">当サイトの使い方について</span></div>
+          <div class="cta">お知らせ一覧をすべて見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">最近の資料（最新3件）<span class="m">9</span></div>
+          <div class="doclist" style="margin-top:6px;">
+            <div class="row"><span class="ftype">PDF</span><span>第1回 住民説明会 資料</span><span class="dl">DL</span></div>
+            <div class="row"><span class="ftype">PDF</span><span>長期修繕計画書（概要版）</span><span class="dl">DL</span></div>
+            <div class="row"><span class="ftype">PDF</span><span>第◯回 理事会 議事録</span><span class="dl">DL</span></div>
+          </div>
+          <div class="cta">資料一覧を見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">動画アーカイブ（最新2件）<span class="m">10</span></div>
+          <div class="vgrid" style="margin-top:8px;">
+            <div class="vcard"><div class="ph thumb">▷ 動画</div><div class="vt">第1回 住民説明会（録画）<br><span class="tiny">2026.07.20</span></div></div>
+            <div class="vcard"><div class="ph thumb">▷ 動画</div><div class="vt">工事内容の説明<br><span class="tiny">2026.07.20</span></div></div>
+          </div>
+          <div class="cta">動画一覧を見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">Q&amp;A</div>
+          <p class="small" style="margin:6px 0;">費用・スケジュール・生活への影響など、よくあるご質問への先回り回答。</p>
+          <div class="cta">よくある質問を見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">ご意見の窓口<span class="m">11</span></div>
+          <p class="small" style="margin:6px 0;">ご質問・ご意見をお送りいただけます。内容の「種別」で担当窓口へお届けします。</p>
+          <div class="cta">ご意見・お問い合わせフォームへ ▷</div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC　｜　ログアウト</p></div>
+    
+      </div>
+    </div>
+    <div class="pc">
+      <div class="frame-label">▎PC表示</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div>
+          <div class="navrow"><span>お知らせ</span><span>工事の計画</span><span>資料DL</span><span>動画</span><span>Q&amp;A</span><span>ご意見の窓口</span><span>ログアウト</span></div></div>
+        
+        <div class="sec"><div class="pin"><span class="pinlabel">固定</span><b class="ttl" style="font-size:12.5px;">工事の計画 ― なぜ大規模修繕工事を行うのか</b>
+          <p class="small" style="margin:6px 0 8px;">工事の目的や進め方をご案内します。くわしい内容は説明会の資料でご確認いただけます。</p>
+          <div class="cta inline">詳しくはこちら ▷</div></div></div>
+        <div class="sec">
+          <div class="kicker">新着（掲示板）<span class="m">8</span></div>
+          <div style="margin:8px 0;"><span class="chip on">すべて</span><span class="chip">お知らせ</span><span class="chip">スケジュール</span><span class="chip">工事の計画</span></div>
+          <div class="post"><span class="date">2026.07.15</span><span class="cat">お知らせ</span><span class="ttl">第1回 住民説明会の開催について</span></div>
+          <div class="post"><span class="date">2026.07.10</span><span class="cat">スケジュール</span><span class="ttl">今後の予定を更新しました（8月の総会日程 ほか）</span></div>
+          <div class="post"><span class="date">2026.07.05</span><span class="cat">工事の計画</span><span class="ttl">建物調査・診断の結果についてのご報告</span></div>
+          <div class="post"><span class="date">2026.06.28</span><span class="cat">お知らせ</span><span class="ttl">当サイトの使い方について</span></div>
+          <div class="cta">お知らせ一覧をすべて見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">最近の資料（最新3件）<span class="m">9</span></div>
+          <div class="doclist" style="margin-top:6px;">
+            <div class="row"><span class="ftype">PDF</span><span>第1回 住民説明会 資料</span><span class="dl">DL</span></div>
+            <div class="row"><span class="ftype">PDF</span><span>長期修繕計画書（概要版）</span><span class="dl">DL</span></div>
+            <div class="row"><span class="ftype">PDF</span><span>第◯回 理事会 議事録</span><span class="dl">DL</span></div>
+          </div>
+          <div class="cta">資料一覧を見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">動画アーカイブ（最新2件）<span class="m">10</span></div>
+          <div class="vgrid" style="margin-top:8px;">
+            <div class="vcard"><div class="ph thumb">▷ 動画</div><div class="vt">第1回 住民説明会（録画）<br><span class="tiny">2026.07.20</span></div></div>
+            <div class="vcard"><div class="ph thumb">▷ 動画</div><div class="vt">工事内容の説明<br><span class="tiny">2026.07.20</span></div></div>
+          </div>
+          <div class="cta">動画一覧を見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">Q&amp;A</div>
+          <p class="small" style="margin:6px 0;">費用・スケジュール・生活への影響など、よくあるご質問への先回り回答。</p>
+          <div class="cta">よくある質問を見る ▷</div>
+        </div>
+        <div class="sec">
+          <div class="kicker">ご意見の窓口<span class="m">11</span></div>
+          <p class="small" style="margin:6px 0;">ご質問・ご意見をお送りいただけます。内容の「種別」で担当窓口へお届けします。</p>
+          <div class="cta">ご意見・お問い合わせフォームへ ▷</div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC　｜　ログアウト</p></div>
+    
+      </div>
+    </div>
+  </div>
+<div class="anno"><h4>会員ページトップ 注釈（実装観点）</h4><ol><li><span class="num">6b</span>会員メニューは投稿カテゴリと別立て。SPは≡格納、PCは上部ナビ。各ページ・メニューの表示/非表示は「物件基本設定」で手動ON/OFF（末尾の参考画面8）。</li><li><span class="num">8</span>お知らせ・スケジュール・工事の計画＝1投稿タイプ＋カテゴリー（taxonomy）。トップは混在の新着一覧（最新4件）、カテゴリ絞り込み、全件は一覧へ。工事の計画（概要）は固定ページ or 先頭固定でトップ常設＋CTA。</li><li><span class="num">9</span>資料DLは別投稿タイプ（資料）＋種別taxonomy。トップは最新3件＋一覧CTA。ファイルはメディア（PDF等）。</li><li><span class="num">10</span><span class='revtag'>7/6</span>動画は外部埋め込み（iframe）。<b>YouTube限定公開で確定</b>（録画・アップロードはMRCが手動運用）。サーバー設置なし＝容量・自動削除考慮不要。最新2件＋一覧CTA。MP4直置き非推奨。</li><li><span class="num">11</span><span class='revtag'>7/6</span>ご意見の窓口＝送信先は物件の段階で切替（着工前＝株式会社MRC／着工後＝施工会社）。種別（工事／計画・全体／生活・管理／その他）は分類・記録用に保持。通知先は管理画面で設定変更可能（物件ごと）。連絡先は住民非表示。</li><li><span class="num">—</span>資料/動画のタイルは削除（プレビュー＋一覧CTAと重複のため）。</li></ol></div>
+  <h2 class="page-title">3. 工事の計画（会員・専用ページ）</h2>
+  <p class="small">会員トップ固定サマリーの【詳しくはこちら】から遷移。〈短い定型説明＋説明会資料のダウンロード〉で構成。物件ごとの入力は資料アップのみ。<span class="m">12</span></p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示（本文はPCも同じ）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div><div class="hamburger">≡</div></div>
+        <div class="sec"><div class="tiny">お知らせ ＞ 工事の計画</div>
+          <p style="font-size:15px; font-weight:bold; margin:8px 0;">工事の計画について</p>
+          <p class="small">◯◯マンションで予定している大規模修繕工事について、目的や進め方をかんたんにご案内します。工事の詳しい内容は、住民説明会で使用した資料（PDF）をご覧ください。</p></div>
+        <div class="sec"><p style="font-size:13px; font-weight:bold;">大規模修繕工事とは（かんたんに）</p>
+          <p class="small">マンションは、およそ12〜15年ごとに、外壁・防水・鉄部などをまとめて直す大規模修繕工事を行います。建物を長く安全に使い、資産としての価値を守るための工事です。専門家（設計監理者）が調査・診断し、住民説明会と総会での合意を経て進めます。</p>
+          <p class="tiny">※この説明文は全物件共通の定型文です（物件ごとに書き起こす必要はありません）。</p></div>
+        <div class="sec"><p style="font-size:13px; font-weight:bold;">くわしい内容は「説明会の資料」で</p>
+          <p class="small">工事の対象箇所や具体的な内容は、調査・診断や説明会の資料にまとめています。下記からダウンロードいただけます（いずれもPDF）。</p>
+          <div class="doclist" style="margin-top:6px;">
+            <div class="row"><span class="ftype">PDF</span><span class="rev">建物調査診断報告書</span><span class="dl">DL</span></div>
+            <div class="row"><span class="ftype">PDF</span><span class="rev">住民説明会資料</span><span class="dl">DL</span></div>
+          </div>
+          <div class="cta">資料ダウンロード一覧へ ▷</div></div>
+        <div class="sec"><p style="font-size:13px; font-weight:bold;">今後の流れ</p>
+          <p class="small">調査・診断 ▷ 住民説明会 ▷ <span class="rev">施工会社の選定 ▷ 総会での決議（工事請負契約の承認）</span> ▷ 着工（時期は決まり次第お知らせします）</p></div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC</p></div>
+      </div>
+    </div>
+    <div class="pc" style="width:360px;">
+      <div class="frame-label">▎このページのポイント</div>
+      <div class="pcnote">御社での入力は<b>説明会資料（PDF）のアップロードだけ</b>を想定しています。冒頭の説明文はテンプレートとして全物件に引き継がれるため、物件ごとに文章を作る必要はありません。<b>巨大な物件でも、説明用のデータを個別に細かく作成する必要はありません。</b><br><br>「工事の対象箇所」などの具体は、御社が説明会で使う資料をそのまま載せる形です。</div>
+    </div>
+  </div>
+<div class="anno"><h4>工事の計画ページ 注釈（実装観点）</h4><ol><li><span class="num">12</span>固定ページで実装。冒頭の定型説明はテンプレート化し、サイト複製時に引き継ぎ（物件ごとの本文入力を発生させない）。工事固有の内容は資料（別投稿タイプ）からのDLリンク／抜粋で対応。物件ごとの入力＝資料アップロードのみ想定。</li></ol></div>
+  <h2 class="page-title">4. Q&amp;A（会員・専用ページ）</h2>
+  <p class="small">質問をタップで回答が開く形式。件数が増えても縦に伸びにくい。PCも同構成。<span class="m">13</span></p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示（PCも同構成）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div><div class="hamburger">≡</div></div>
+        <div class="sec"><p style="font-size:15px; font-weight:bold; margin:4px 0;">よくあるご質問（Q&amp;A）</p>
+          <p class="small">計画期間中によくいただくご質問をまとめました。解決しない場合は「ご意見の窓口」からお問い合わせください。</p></div>
+        <div class="sec">
+          <div class="acc"><div class="q">Q. なぜ今、大規模修繕工事をするのですか？<span class="sign">−</span></div>
+            <div class="a">建物の劣化は時間とともに進みます。調査・診断の結果をもとに、傷みが大きくなる前の適切な時期として計画しています。詳しくは「工事の計画」をご覧ください。</div></div>
+          <div class="acc"><div class="q">Q. 工事の費用はどうなりますか？<span class="sign">−</span></div>
+            <div class="a">原則として、毎月お積み立ていただいている修繕積立金から充当します。費用の詳細や追加のご負担の有無は、総会でお諮りします。</div></div>
+          <div class="acc"><div class="q">Q. いつから工事が始まりますか？<span class="sign">＋</span></div></div>
+          <div class="acc"><div class="q">Q. 説明会に参加できませんでした。<span class="sign">＋</span></div></div>
+          <div class="acc"><div class="q">Q. 意見や要望はどこに伝えればいいですか？<span class="sign">＋</span></div></div>
+          <div class="acc"><div class="q">Q. ベランダの私物は片付ける必要がありますか？<span class="sign">＋</span></div></div>
+          <div class="acc"><div class="q"><span class="revtag">7/6 追加</span>Q. 建物調査時のバルコニー調査に立ち会えなかった場合、工事の対象外になりますか？<span class="sign">−</span></div>
+            <div class="a">対象外にはなりません。建物調査でのバルコニー調査は、建物全体の劣化状況を把握し、工事内容を検討するために実施するものです。工事着工後には施工会社が全住戸を対象として改めて調査を実施し、その際に劣化状況を確認したうえで必要な補修を行いますので、ご安心ください。</div></div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC</p></div>
+      </div>
+    </div>
+    <div class="pc" style="width:360px;">
+      <div class="frame-label">▎想定Q（開いた時の中身）</div>
+      <div class="pcnote">
+        <b>Q. いつから工事が始まりますか？</b><br>現在は計画段階です。着工の時期は、施工会社の選定・総会での決議を経て決まります。決まり次第、お知らせでご案内します。<br><br>
+        <b>Q. 説明会に参加できませんでした。</b><br>「資料ダウンロード」で当日資料を、「動画アーカイブ」で録画をご覧いただけます。<br><br>
+        <b>Q. ベランダの私物は…</b><br>計画段階では対応は不要です。工事が始まる前に、あらためて具体的なお願いをご案内します。
+      </div>
+    </div>
+  </div>
+<div class="anno"><h4>Q&amp;Aページ 注釈（実装観点）</h4><ol><li><span class="num">13</span>アコーディオン実装。Q&amp;Aは投稿タイプ or 固定ページ内の繰り返しブロック。件数増加に対応。SP/PC同構成。</li></ol></div>
+  <h2 class="page-title">5. ご意見の窓口／お問い合わせ（会員・専用ページ）</h2>
+  <p class="small">入力 → 確認 → 完了 の専用ページ（ポップアップではない）。種別で内部の担当窓口へ振り分け。<span class="m">14</span></p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示：入力</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div><div class="hamburger">≡</div></div>
+        <div class="sec"><p style="font-size:15px; font-weight:bold; margin:4px 0;">ご意見・お問い合わせ</p>
+          <p class="small">ご質問・ご意見をお送りください。内容の「種別」に応じて、担当の窓口へお届けします。</p>
+          <div class="steps"><span class="st on">1 入力</span><span class="st">2 確認</span><span class="st">3 完了</span></div></div>
+        <div class="sec">
+          <p class="small" style="font-weight:bold;">種別（必須）<span class="m">15</span></p>
+          <div style="margin:6px 0;"><span class="radio on">工事のこと</span><span class="radio">計画・全体のこと</span><span class="radio">生活・管理のこと</span><span class="radio">その他</span></div>
+          <p class="small" style="font-weight:bold; margin-top:10px;">お名前（任意）</p><div class="field" style="margin:4px 0;">　</div>
+          <p class="small" style="font-weight:bold;">部屋番号（任意）</p><div class="field" style="margin:4px 0;">　</div>
+          <p class="small" style="font-weight:bold;">お問い合わせ内容（必須）</p><div class="field ta" style="margin:4px 0;">　</div>
+          <div class="btn block" style="margin-top:10px;">入力内容を確認する</div>
+          <p class="tiny" style="margin-top:8px;">※ お名前・部屋番号は任意です。匿名でもお送りいただけます。</p></div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC</p></div>
+      </div>
+    </div>
+    <div class="pc" style="width:360px;">
+      <div class="frame-label">▎確認・完了画面</div>
+      <div class="screen">
+        <div class="flowpage"><h5>確認画面（ステップ2）</h5>
+          <p class="small">入力内容をご確認ください。<br><br>種別：工事のこと<br>お名前：（任意）<br>内容：〜〜〜〜〜</p>
+          <div class="btn block" style="margin-top:8px;">この内容で送信する</div>
+          <div class="small" style="text-align:center; margin-top:6px; text-decoration:underline;">修正する</div></div>
+        <div class="flowpage"><h5>完了画面（ステップ3）</h5>
+          <p class="small">お問い合わせを受け付けました。<br>内容を確認し、担当の窓口より順次対応いたします。ご協力ありがとうございました。</p>
+          <div class="btn block" style="margin-top:8px;">トップに戻る</div></div>
+      </div>
+    </div>
+  </div>
+<div class="anno"><h4>ご意見の窓口 注釈（実装観点）</h4><ol><li><span class="num">14</span>入力→確認→完了の3画面（ページ遷移）。フォームプラグイン等。</li><li><span class="num">15</span><span class='revtag'>7/6</span>送信先は物件の段階で切替（着工前＝全てMRC／着工後＝施工会社）を想定。種別（4種）は保持し、通知先は管理画面で設定変更可能（物件ごと）。氏名・部屋番号は任意。reCAPTCHA等。</li></ol></div>
+  <h2 class="page-title">7. お知らせ一覧（会員・一覧ページ）</h2>
+  <p class="small">会員トップ「お知らせ一覧をすべて見る」の飛び先。資料一覧・動画一覧も同じ〈一覧＋絞り込み＋ページ送り〉の型。<span class="m">16</span></p>
+  <div class="frames">
+    <div class="sp">
+      <div class="frame-label">▎スマートフォン表示（PCも同構成）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">◯◯マンション</div><div class="hamburger">≡</div></div>
+        <div class="sec"><p style="font-size:15px; font-weight:bold; margin:4px 0;">お知らせ一覧</p>
+          <div style="margin:8px 0;"><span class="chip on">すべて</span><span class="chip">お知らせ</span><span class="chip">スケジュール</span><span class="chip">工事の計画</span></div>
+          <div class="post"><span class="date">2026.07.15</span><span class="cat">お知らせ</span><span class="ttl">第1回 住民説明会の開催について</span></div>
+          <div class="post"><span class="date">2026.07.10</span><span class="cat">スケジュール</span><span class="ttl">今後の予定を更新しました</span></div>
+          <div class="post"><span class="date">2026.07.05</span><span class="cat">工事の計画</span><span class="ttl">建物調査・診断の結果についてのご報告</span></div>
+          <div class="post"><span class="date">2026.06.28</span><span class="cat">お知らせ</span><span class="ttl">当サイトの使い方について</span></div>
+          <div class="post"><span class="date">2026.06.20</span><span class="cat">スケジュール</span><span class="ttl">今後のスケジュール（たたき台）</span></div>
+          <div class="post"><span class="date">2026.06.10</span><span class="cat">お知らせ</span><span class="ttl">居住者専用サイトを開設しました</span></div>
+          <div class="pager"><span>&lt;</span><span class="on">1</span><span>2</span><span>3</span><span>&gt;</span></div>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">運営：株式会社MRC</p></div>
+      </div>
+    </div>
+    <div class="pc" style="width:360px;">
+      <div class="frame-label">▎補足</div>
+      <div class="pcnote">この一覧の型を、飛び先ごとに中身だけ替えて使い回します：<br>・<b>資料一覧</b>＝会員トップ⑨の資料リスト（種別で絞り込み＋ページ送り）<br>・<b>動画一覧</b>＝会員トップ⑩の動画の並び（＋ページ送り）<br><br>各記事タイトルをタップ＝詳細ページ（本文＋添付PDF等）。詳細ページのワイヤーが必要なら次に作成します。</div>
+    </div>
+  </div>
+<div class="anno"><h4>お知らせ一覧ページ 注釈（実装観点）</h4><ol><li><span class="num">16</span>一覧テンプレートは共通化。お知らせ一覧＝アーカイブ（カテゴリ絞り込み＋ページネーション）。資料一覧＝資料投稿タイプのアーカイブ、動画一覧＝動画のグリッドアーカイブ。同テンプレを流用。単一記事＝詳細テンプレート（本文＋添付）。</li></ol></div>
+  <h2 class="page-title">8. 管理画面：物件基本設定（参考・出し分け設定）</h2>
+  <p class="small">ページ・メニューの物件ごとの出し分けは、管理画面「物件基本設定」で手動ON/OFF（西山さん実装案）。※MRCが操作する管理画面のイメージで、住民には表示されません。<span class="m">17</span></p>
+  <div class="frames">
+    <div class="pc" style="width:560px;">
+      <div class="frame-label">▎管理画面イメージ（MRCが操作）</div>
+      <div class="screen">
+        <div class="site-head"><div class="logo">物件基本設定 ／ ◯◯マンション</div></div>
+        <div class="sec">
+          <p class="small" style="font-weight:bold;">ページごとの公開・メニュー表示</p>
+          <div class="doclist" style="margin-top:6px;">
+            <div class="row" style="font-weight:bold; color:#555;"><span style="flex:1.5;">ページ</span><span style="flex:1;">このページを公開</span><span style="flex:1;">メニューに表示</span></div>
+            <div class="row"><span style="flex:1.5;">お知らせ</span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span></div>
+            <div class="row"><span style="flex:1.5;">工事の計画</span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span></div>
+            <div class="row"><span style="flex:1.5;">資料ダウンロード</span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span></div>
+            <div class="row"><span style="flex:1.5;">動画アーカイブ</span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span></div>
+            <div class="row"><span style="flex:1.5;">Q&amp;A</span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span></div>
+            <div class="row"><span style="flex:1.5;">ご意見の窓口</span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span><span style="flex:1;"><span class="radio on">ON</span><span class="radio">OFF</span></span></div>
+            <div class="row"><span style="flex:1.5;">工事に関するお知らせ<br><span class="tiny">（工事期間・任意）</span></span><span style="flex:1;"><span class="radio">ON</span><span class="radio on">OFF</span></span><span style="flex:1;"><span class="radio">ON</span><span class="radio on">OFF</span></span></div>
+          </div>
+          <p class="tiny" style="margin-top:8px;">※「工事に関するお知らせ」など工事期間ページは既定OFF。要望のある物件だけMRCがONにする運用。</p>
+        </div>
+        <div class="sec" style="background:#f4f4f4;"><p class="tiny">WordPress 管理画面（MRC操作／住民非表示）</p></div>
+      </div>
+    </div>
+    <div class="sp" style="width:360px;">
+      <div class="frame-label">▎ポイント</div>
+      <div class="pcnote">出し分けは<b>データの有無による自動ではなく、MRCの手動ON/OFF</b>です。<br><br>・中身を準備してから公開したい、逆に一時的に隠したい、にも対応できます。<br>・工事期間の“中身”（工程表・生活情報など）は1棟目では作らず、この表示制御の“土台”のみ用意します。<br>・複製で新しい物件を作った後も、各物件で個別にON/OFFを設定できます。</div>
+    </div>
+  </div>
+<div class="anno"><h4>物件基本設定（出し分け）注釈（実装観点）</h4><ol><li><span class="num">17</span>出し分けはデータ駆動の自動ではなく、<b>MRCの手動ON/OFF</b>。管理画面「物件基本設定」に、ページごとの『このページを公開(ON/OFF)』『メニューに表示(ON/OFF)』ラジオを設置（西山さん実装案）。工事期間ページ（例：工事に関するお知らせ＝お知らせのカテゴリー）は既定OFF、要望物件のみMRCがON。マルチサイト複製後も各物件で個別設定可能。中身（工程表・生活情報等）は1棟目では作らず、表示制御の土台のみ用意。</li></ol></div>
+  <div class="confirm"><h4>確定事項・確認事項</h4>
+    <ul>
+      <li><b>【確定】動画</b>：YouTube限定公開（iframe埋め込み）。録画・アップロードはMRCが手動運用。MP4直置きは非採用。</li>
+      <li><b>【確定】窓口の送信先</b>：着工前＝株式会社MRC／着工後＝施工会社。種別（4種）は保持。通知先は管理画面で設定変更可能（物件ごと）。</li>
+      <li><b>【確定】Q&amp;A</b>：物件ごとにMRCが追加・編集できる仕様。</li>
+      <li>投稿タイプ設計：お知らせ系（1投稿タイプ＋カテゴリー）／資料（別投稿タイプ＋種別taxonomy）／動画の持ち方。</li>
+      <li>ログイン認証方式（住民共通ID or 個別ID）、noindex・アクセス制御の範囲。</li>
+      <li>複製運用（マルチサイト雛形の複製→物件依存値の差し替え）・出し分け（物件基本設定の手動ON/OFF）の手順書粒度。</li>
+      <li>一覧／詳細テンプレートの共通化方針。</li>
+    </ul>
+  </div>
+
+<footer>ワイヤーフレーム ／ 本資料は構造確認用です。色・写真・フォント等のデザインは次工程で作成します。</footer>
+</div></body></html>

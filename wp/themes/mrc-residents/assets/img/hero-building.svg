@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 640" preserveAspectRatio="xMidYMid slice" role="img" aria-label="マンション外観イメージ">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1A365D"/>
+      <stop offset="1" stop-color="#2C4A73"/>
+    </linearGradient>
+    <linearGradient id="bldA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8EDF4"/>
+      <stop offset="1" stop-color="#C9D5E5"/>
+    </linearGradient>
+    <linearGradient id="bldB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F3F6FB"/>
+      <stop offset="1" stop-color="#D7E0ED"/>
+    </linearGradient>
+    <pattern id="win" width="46" height="56" patternUnits="userSpaceOnUse">
+      <rect width="46" height="56" fill="none"/>
+      <rect x="10" y="12" width="26" height="30" rx="2" fill="#9FB3CC" opacity="0.85"/>
+    </pattern>
+    <pattern id="winGold" width="46" height="56" patternUnits="userSpaceOnUse">
+      <rect width="46" height="56" fill="none"/>
+      <rect x="10" y="12" width="26" height="30" rx="2" fill="#C5A059" opacity="0.55"/>
+    </pattern>
+  </defs>
+
+  <!-- 空 -->
+  <rect width="1200" height="640" fill="url(#sky)"/>
+  <circle cx="980" cy="120" r="60" fill="#C5A059" opacity="0.22"/>
+
+  <!-- 奥のビル -->
+  <g opacity="0.55">
+    <rect x="120" y="230" width="150" height="410" fill="#24406A"/>
+    <rect x="120" y="230" width="150" height="410" fill="url(#win)" opacity="0.5"/>
+    <rect x="930" y="270" width="170" height="370" fill="#24406A"/>
+    <rect x="930" y="270" width="170" height="370" fill="url(#win)" opacity="0.5"/>
+  </g>
+
+  <!-- 手前メインの建物A -->
+  <rect x="320" y="160" width="300" height="480" fill="url(#bldA)"/>
+  <rect x="336" y="196" width="268" height="420" fill="url(#win)"/>
+  <rect x="336" y="196" width="268" height="60" fill="url(#winGold)"/>
+  <rect x="320" y="150" width="300" height="18" fill="#B7C6DA"/>
+
+  <!-- 手前メインの建物B -->
+  <rect x="620" y="240" width="260" height="400" fill="url(#bldB)"/>
+  <rect x="636" y="272" width="228" height="352" fill="url(#win)"/>
+  <rect x="620" y="232" width="260" height="16" fill="#C6D2E2"/>
+
+  <!-- エントランス -->
+  <rect x="430" y="560" width="80" height="80" fill="#1A365D"/>
+  <rect x="700" y="580" width="100" height="60" fill="#24406A"/>
+
+  <!-- 植栽ライン -->
+  <rect x="0" y="628" width="1200" height="12" fill="#16304F"/>
+</svg>

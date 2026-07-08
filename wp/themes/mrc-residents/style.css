@@ -1,0 +1,14 @@
+/*
+Theme Name: MRC 居住者専用サイト
+Theme URI: https://example.com/
+Author: WEB BUTLER
+Author URI: https://example.com/
+Description: 大規模修繕 居住者専用サイトの横展開用テーマ。全物件で共通して使用し、物件名・ロゴ・問い合わせ先などは各物件の設定で差し替えます。
+Version: 0.1.0
+Requires at least: 6.0
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+Text Domain: mrc-residents
+*/
+
+/* 実際のデザインは assets/css/app.css に集約しています（このファイルはテーマ情報のヘッダー用）。 */

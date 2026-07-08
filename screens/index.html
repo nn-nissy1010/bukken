@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>画面一覧 — 居住者専用サイト 現状確認</title>
+<style>
+  :root{--navy:#1A365D;--border:#E2E8F0;--bg:#F8FAFC;--text:#2D3748;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Noto Sans JP","Hiragino Sans","Meiryo",sans-serif;color:var(--text);background:var(--bg);line-height:1.7;}
+  header{background:var(--navy);color:#fff;padding:24px 32px;}
+  header h1{margin:0 0 4px;font-size:20px;}
+  header p{margin:0;opacity:.85;font-size:14px;}
+  main{max-width:1400px;margin:0 auto;padding:24px 32px 64px;}
+  section{margin-top:40px;}
+  h2{font-size:18px;border-bottom:2px solid var(--navy);padding-bottom:8px;color:var(--navy);}
+  h2 small{font-weight:400;color:#718096;font-size:13px;margin-left:8px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;margin-top:16px;}
+  .card{margin:0;background:#fff;border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+  .card img{width:100%;height:200px;object-fit:cover;object-position:top;display:block;border-bottom:1px solid var(--border);background:#fff;transition:opacity .2s;}
+  .card a:hover img{opacity:.85;}
+  figcaption{padding:10px 14px;font-size:14px;font-weight:500;}
+  .no{display:inline-block;min-width:22px;text-align:center;background:var(--navy);color:#fff;border-radius:4px;font-size:12px;padding:1px 5px;margin-right:6px;}
+  .note{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 18px;margin-top:20px;font-size:13px;color:#4A5568;}
+</style>
+</head>
+<body>
+<header>
+  <h1>◯◯マンション 居住者専用サイト ― 画面一覧（現状確認用）</h1>
+  <p>実際に稼働中のローカル環境（house1）を撮影したものです。画像クリックで原寸表示。</p>
+</header>
+<main>
+  
+    <section>
+      <h2>住民向け画面 <small>13点</small></h2>
+      <div class="grid">
+      <figure class="card">
+        <a href="resident/01-top-login.png" target="_blank">
+          <img loading="lazy" src="resident/01-top-login.png" alt="ログイン前トップ">
+        </a>
+        <figcaption><span class="no">01</span> ログイン前トップ</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/02-contact-public.png" target="_blank">
+          <img loading="lazy" src="resident/02-contact-public.png" alt="お問い合わせ（ログイン前）">
+        </a>
+        <figcaption><span class="no">02</span> お問い合わせ（ログイン前）</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/03-member-top.png" target="_blank">
+          <img loading="lazy" src="resident/03-member-top.png" alt="会員トップ">
+        </a>
+        <figcaption><span class="no">03</span> 会員トップ</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/04-plan.png" target="_blank">
+          <img loading="lazy" src="resident/04-plan.png" alt="工事の計画">
+        </a>
+        <figcaption><span class="no">04</span> 工事の計画</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/05-news-archive.png" target="_blank">
+          <img loading="lazy" src="resident/05-news-archive.png" alt="お知らせ一覧">
+        </a>
+        <figcaption><span class="no">05</span> お知らせ一覧</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/06-news-single.png" target="_blank">
+          <img loading="lazy" src="resident/06-news-single.png" alt="お知らせ 詳細">
+        </a>
+        <figcaption><span class="no">06</span> お知らせ 詳細</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/07-document-archive.png" target="_blank">
+          <img loading="lazy" src="resident/07-document-archive.png" alt="資料一覧">
+        </a>
+        <figcaption><span class="no">07</span> 資料一覧</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/08-document-single.png" target="_blank">
+          <img loading="lazy" src="resident/08-document-single.png" alt="資料 詳細（PDFプレビュー）">
+        </a>
+        <figcaption><span class="no">08</span> 資料 詳細（PDFプレビュー）</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/09-video-archive.png" target="_blank">
+          <img loading="lazy" src="resident/09-video-archive.png" alt="動画一覧">
+        </a>
+        <figcaption><span class="no">09</span> 動画一覧</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/10-video-single.png" target="_blank">
+          <img loading="lazy" src="resident/10-video-single.png" alt="動画 詳細">
+        </a>
+        <figcaption><span class="no">10</span> 動画 詳細</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/11-qa.png" target="_blank">
+          <img loading="lazy" src="resident/11-qa.png" alt="Q&A">
+        </a>
+        <figcaption><span class="no">11</span> Q&A</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/12-contact.png" target="_blank">
+          <img loading="lazy" src="resident/12-contact.png" alt="ご意見の窓口">
+        </a>
+        <figcaption><span class="no">12</span> ご意見の窓口</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="resident/13-privacy.png" target="_blank">
+          <img loading="lazy" src="resident/13-privacy.png" alt="プライバシーポリシー">
+        </a>
+        <figcaption><span class="no">13</span> プライバシーポリシー</figcaption>
+      </figure></div>
+    </section>
+  
+    <section>
+      <h2>管理者向け画面 <small>11点</small></h2>
+      <div class="grid">
+      <figure class="card">
+        <a href="admin/01-dashboard.png" target="_blank">
+          <img loading="lazy" src="admin/01-dashboard.png" alt="ダッシュボード（物件）">
+        </a>
+        <figcaption><span class="no">01</span> ダッシュボード（物件）</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/02-news-list.png" target="_blank">
+          <img loading="lazy" src="admin/02-news-list.png" alt="お知らせ 一覧（管理）">
+        </a>
+        <figcaption><span class="no">02</span> お知らせ 一覧（管理）</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/03-news-edit.png" target="_blank">
+          <img loading="lazy" src="admin/03-news-edit.png" alt="お知らせ 編集">
+        </a>
+        <figcaption><span class="no">03</span> お知らせ 編集</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/04-document-edit.png" target="_blank">
+          <img loading="lazy" src="admin/04-document-edit.png" alt="資料 編集（メタボックス）">
+        </a>
+        <figcaption><span class="no">04</span> 資料 編集（メタボックス）</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/05-video-edit.png" target="_blank">
+          <img loading="lazy" src="admin/05-video-edit.png" alt="動画 編集">
+        </a>
+        <figcaption><span class="no">05</span> 動画 編集</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/06-property-settings.png" target="_blank">
+          <img loading="lazy" src="admin/06-property-settings.png" alt="物件基本設定">
+        </a>
+        <figcaption><span class="no">06</span> 物件基本設定</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/07-contact-settings.png" target="_blank">
+          <img loading="lazy" src="admin/07-contact-settings.png" alt="ご意見の窓口 通知先設定">
+        </a>
+        <figcaption><span class="no">07</span> ご意見の窓口 通知先設定</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/08-network-dashboard.png" target="_blank">
+          <img loading="lazy" src="admin/08-network-dashboard.png" alt="ネットワーク ダッシュボード">
+        </a>
+        <figcaption><span class="no">08</span> ネットワーク ダッシュボード</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/09-network-sites.png" target="_blank">
+          <img loading="lazy" src="admin/09-network-sites.png" alt="ネットワーク サイト一覧">
+        </a>
+        <figcaption><span class="no">09</span> ネットワーク サイト一覧</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/10-nscloner.png" target="_blank">
+          <img loading="lazy" src="admin/10-nscloner.png" alt="NS Cloner（物件複製）">
+        </a>
+        <figcaption><span class="no">10</span> NS Cloner（物件複製）</figcaption>
+      </figure>
+      <figure class="card">
+        <a href="admin/11-privacy-edit.png" target="_blank">
+          <img loading="lazy" src="admin/11-privacy-edit.png" alt="プライバシーポリシー編集">
+        </a>
+        <figcaption><span class="no">11</span> プライバシーポリシー編集</figcaption>
+      </figure></div>
+    </section>
+  <p class="note">
+    ※ 住民向けの会員ページは、実データ表示のため管理者アカウントで開き、上部の管理ツールバーを隠して撮影しています（居住者に見える画面と同一レイアウト）。<br>
+    ※ 撮影日時点の見た目です。デザイン変更後に再確認したい場合は再撮影できます。
+  </p>
+</main>
+</body>
+</html>
