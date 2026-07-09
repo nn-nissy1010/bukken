@@ -51,7 +51,7 @@ get_header();
 
 			<section style="margin-bottom:48px;">
 				<div class="section-heading"><h2>主な工事の対象</h2></div>
-				<p style="margin-bottom:16px;">大規模修繕では、主に次のような箇所をまとめて点検・修繕します。（対象箇所は建物により異なります）</p>
+				<p style="margin-bottom:16px;">大規模修繕工事では、主に次のような箇所をまとめて点検・修繕します。（対象箇所は建物により異なります）</p>
 				<ul class="spec-tags">
 					<li>外壁塗装</li>
 					<li>防水工事（屋上・バルコニー）</li>
@@ -97,7 +97,7 @@ get_header();
 			</section>
 
 			<section>
-				<div class="section-heading"><h2>今後の流れ</h2></div>
+				<div class="section-heading"><h2>工事の流れ</h2></div>
 				<ol class="process-steps">
 					<li class="process-step">
 						<span class="process-step__num">1</span>
@@ -109,26 +109,33 @@ get_header();
 					<li class="process-step">
 						<span class="process-step__num">2</span>
 						<div class="process-step__body">
+							<h3 class="process-step__title">改修設計</h3>
+							<p class="process-step__desc">調査・診断の結果をもとに、直す箇所や工事の方法・仕様を図面にまとめ、工事の内容を固めます。</p>
+						</div>
+					</li>
+					<li class="process-step">
+						<span class="process-step__num">3</span>
+						<div class="process-step__body">
 							<h3 class="process-step__title">住民説明会</h3>
 							<p class="process-step__desc">調査の結果や工事の進め方を、居住者の皆さまにわかりやすくご説明します。</p>
 						</div>
 					</li>
 					<li class="process-step">
-						<span class="process-step__num">3</span>
+						<span class="process-step__num">4</span>
 						<div class="process-step__body">
 							<h3 class="process-step__title">施工会社の選定</h3>
 							<p class="process-step__desc">複数の会社を比較・検討し、工事を担当する施工会社を選びます。</p>
 						</div>
 					</li>
 					<li class="process-step">
-						<span class="process-step__num">4</span>
+						<span class="process-step__num">5</span>
 						<div class="process-step__body">
 							<h3 class="process-step__title">総会での決議</h3>
 							<p class="process-step__desc">工事請負契約の承認を総会で決議し、工事が正式に決まります。</p>
 						</div>
 					</li>
 					<li class="process-step">
-						<span class="process-step__num">5</span>
+						<span class="process-step__num">6</span>
 						<div class="process-step__body">
 							<h3 class="process-step__title">着工</h3>
 							<p class="process-step__desc">準備が整い次第、工事を開始します。工程はお知らせと掲示板でご案内します。</p>
