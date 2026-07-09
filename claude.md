@@ -67,9 +67,11 @@ npx @wordpress/env run cli wp <command> --url=localhost:8888/house1   # wp-cli
 - ルート `http://localhost:8888/` … 雛形（メインサイト）。
 - **居住者向けデモは サブサイト `http://localhost:8888/house1/`**（`front-page.php` がレンダリング）。
 - 管理画面 `…/wp-admin/`、ネットワーク管理 `…/wp-admin/network/`。
-- 居住者デモアカウント：user `user`（subscriber, ID3）。パスワードは
-  `wp user update 3 --user_pass=... --url=localhost:8888/house1` で設定。
-- デモお知らせ投入：`dev/seed-demo-news.php` を `wp eval-file` で（同名スキップ・再実行安全）。
+- 居住者デモアカウント：`resident` / `resident1234`（subscriber。seedが全物件共通で用意）。
+  ※ house1 には旧アカウント `user`（ID3）も残置。ログイン確認は `resident` を使う。
+- デモデータ一括投入：`dev/seed.php` を `wp eval-file` で（物件名・固定ページ・お知らせ/資料/動画/Q&A・居住者アカウントまで単独で構築。冪等・再実行安全）。
+  - ローカルからの完全再構築手順は `README.md` の「ローカルをゼロから再構築」を参照。
+- メール検証：`wp/dev-mail/` の mu-plugin が全メールを Mailpit へ転送。受信確認は http://localhost:8025 （起動 `docker run -d --name mrc-mailpit -p 8025:8025 -p 1025:1025 axllent/mailpit`）。本番には配布されない（wp-env の mappings 経由のみ）。
 
 ### 見た目確認・スクショ（ヘッドレスChrome、JSも実行される）
 ```bash

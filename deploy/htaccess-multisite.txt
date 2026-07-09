@@ -1,0 +1,31 @@
+// ============================================================
+// サブディレクトリ型マルチサイト用 .htaccess（WordPress 3.5+）
+// サーバーの WordPress ルート（wp-config.php と同じ階層）の .htaccess を
+// 下記「WordPress」ブロックで置き換える。RewriteBase はサブディレクトリに
+// 設置している場合のみ調整（ドメイン直下なら / のまま）。
+// 「ネットワークの設置」画面が表示する内容と同一なので、そちらが出す値を
+// 優先してよい。
+// ============================================================
+
+# BEGIN WordPress
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+
+# add a trailing slash to /wp-admin
+RewriteRule ^([_0-9a-zA-Z-]+/)?wp-admin$ $1wp-admin/ [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(wp-(content|admin|includes).*) $2 [L]
+RewriteRule ^([_0-9a-zA-Z-]+/)?(.*\.php)$ $2 [L]
+RewriteRule . index.php [L]
+# END WordPress
+
+# ---- 任意：居住者専用サイトの追加ハードニング ----
+# xmlrpc を無効化（総当たり攻撃対策。管理側で不要なら）
+<Files xmlrpc.php>
+	Require all denied
+</Files>

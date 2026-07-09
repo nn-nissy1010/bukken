@@ -21,6 +21,7 @@ function mrc_news_badge_class( $slug ) {
 
 <main>
 	<!-- 固定サマリー -->
+	<?php if ( mrc_page_is_public( 'plan' ) ) : ?>
 	<section class="section section--tight">
 		<div class="container">
 			<div class="pinned-card">
@@ -31,8 +32,10 @@ function mrc_news_badge_class( $slug ) {
 			</div>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<!-- 新着（掲示板） -->
+	<?php if ( mrc_page_is_public( 'news' ) ) : ?>
 	<section class="section section--tight">
 		<div class="container">
 			<div class="section-heading">
@@ -85,8 +88,10 @@ function mrc_news_badge_class( $slug ) {
 			<p style="margin-top:16px;"><a href="<?php echo esc_url( get_post_type_archive_link( 'news' ) ); ?>" class="cta-link">お知らせ一覧をすべて見る</a></p>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<!-- 最近の資料 -->
+	<?php if ( mrc_page_is_public( 'document' ) ) : ?>
 	<section class="section section--tight section--alt">
 		<div class="container">
 			<div class="section-heading">
@@ -123,8 +128,10 @@ function mrc_news_badge_class( $slug ) {
 			<p style="margin-top:16px;"><a href="<?php echo esc_url( get_post_type_archive_link( 'document' ) ); ?>" class="cta-link">資料一覧を見る</a></p>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<!-- 動画アーカイブ -->
+	<?php if ( mrc_page_is_public( 'video' ) ) : ?>
 	<section class="section section--tight">
 		<div class="container">
 			<div class="section-heading">
@@ -161,11 +168,14 @@ function mrc_news_badge_class( $slug ) {
 			<p style="margin-top:16px;"><a href="<?php echo esc_url( get_post_type_archive_link( 'video' ) ); ?>" class="cta-link">動画一覧を見る</a></p>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<!-- Q&A / ご意見の窓口 -->
+	<?php if ( mrc_page_is_public( 'qa' ) || mrc_page_is_public( 'contact' ) ) : ?>
 	<section class="section section--tight section--alt">
 		<div class="container">
 			<div class="grid grid--2">
+				<?php if ( mrc_page_is_public( 'qa' ) ) : ?>
 				<div class="card card--pad-lg">
 					<div class="section-heading" style="margin-bottom:12px;">
 						<h2 style="font-size:22px;">よくあるご質問</h2>
@@ -173,6 +183,8 @@ function mrc_news_badge_class( $slug ) {
 					<p style="color:var(--color-text-muted); margin-bottom:20px;">費用・スケジュール・生活への影響など、よくあるご質問への先回り回答をまとめています。</p>
 					<a href="<?php echo esc_url( get_post_type_archive_link( 'qa' ) ); ?>" class="cta-link">よくある質問を見る</a>
 				</div>
+				<?php endif; ?>
+				<?php if ( mrc_page_is_public( 'contact' ) ) : ?>
 				<div class="card card--pad-lg">
 					<div class="section-heading" style="margin-bottom:12px;">
 						<h2 style="font-size:22px;">ご意見の窓口</h2>
@@ -180,9 +192,11 @@ function mrc_news_badge_class( $slug ) {
 					<p style="color:var(--color-text-muted); margin-bottom:20px;">ご質問・ご意見をお送りいただけます。内容の「種別」に応じて担当窓口へお届けします。</p>
 					<a href="<?php echo esc_url( home_url( '/contact/' ) ); ?>" class="btn btn--primary">ご意見・お問い合わせフォームへ</a>
 				</div>
+				<?php endif; ?>
 			</div>
 		</div>
 	</section>
+	<?php endif; ?>
 </main>
 
 <?php

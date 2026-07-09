@@ -1,0 +1,11 @@
+# 認証情報を含むデプロイ設定（絶対にコミットしない）
+deploy/.env
+
+# OS / エディタ
+.DS_Store
+
+# wp-env のローカル生成物
+wp/.wp-env/
+
+# history
+.history

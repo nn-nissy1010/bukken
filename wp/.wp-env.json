@@ -5,6 +5,9 @@
   "themes": [
     "./themes/mrc-residents"
   ],
+  "mappings": {
+    "wp-content/mu-plugins/mrc-dev-mailpit.php": "./dev-mail/mrc-dev-mailpit.php"
+  },
   "config": {
     "WP_DEBUG": true,
     "WP_DEBUG_LOG": true,
