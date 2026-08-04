@@ -194,12 +194,16 @@ function mrc_qa_answer_label( $post ) {
 }
 add_action( 'edit_form_after_title', 'mrc_qa_answer_label' );
 
-/** Q&A編集画面では本文欄の「メディアを追加」ボタンを隠す（回答は文章のみ）。 */
+/**
+ * Q&A編集画面では本文欄上部のツールバー帯（メディアを追加＋Visual/Textタブ）を隠す。
+ * このエディタはタブが空のため、帯だけ残ると不自然な余白になる。帯ごと非表示にし、
+ * 見出し（回答A）の直下に本文欄が来るようにする。書式ボタンはエディタ本体側なので残る。
+ */
 function mrc_qa_hide_media_button() {
 	$screen = get_current_screen();
 	if ( ! $screen || 'qa' !== $screen->post_type ) {
 		return;
 	}
-	echo '<style>#wp-content-media-buttons{display:none;}</style>';
+	echo '<style>#wp-content-editor-tools{display:none;}</style>';
 }
 add_action( 'admin_head', 'mrc_qa_hide_media_button' );
