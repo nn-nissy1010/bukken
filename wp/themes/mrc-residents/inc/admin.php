@@ -401,3 +401,50 @@ function mrc_network_guide_html() {
 	<?php
 }
 
+
+/* ============================================================
+   ユーザーの権限グループを、この仕組みで実際に使う3つに整理する。
+   - 居住者（購読者）… フロント閲覧のみ。日常的に追加する対象。
+   - 編集者          … 施工会社（着工後の窓口）がお知らせ等を投稿。
+   - 管理者          … MRC管理スタッフ（設定・複製まで）。
+   使い道のない「寄稿者」「投稿者」は選択肢から外し、迷いを減らす。
+   ============================================================ */
+
+/** 権限グループの選択肢から未使用ロール（寄稿者・投稿者）を除外する。 */
+function mrc_restrict_editable_roles( $roles ) {
+	unset( $roles['contributor'], $roles['author'] );
+	return $roles;
+}
+add_filter( 'editable_roles', 'mrc_restrict_editable_roles' );
+
+/**
+ * 「購読者（Subscriber）」の表示名を「居住者」に置き換える。
+ * ロールの表示名は translate_user_role() 経由で 'User role' コンテキストの
+ * gettext を通るため、そこを差し替える。スラッグ（subscriber）や権限は不変。
+ */
+function mrc_rename_subscriber_label( $translated, $text, $context, $domain ) {
+	if ( 'User role' === $context && 'Subscriber' === $text ) {
+		return '居住者';
+	}
+	return $translated;
+}
+add_filter( 'gettext_with_context', 'mrc_rename_subscriber_label', 10, 4 );
+
+/** ユーザー追加画面（物件サイト）に、どの権限グループを選ぶかの案内を出す。 */
+function mrc_user_new_role_hint() {
+	if ( is_network_admin() || 'user-new.php' !== $GLOBALS['pagenow'] ) {
+		return;
+	}
+	?>
+	<div class="notice notice-info">
+		<p style="font-size:14px;line-height:1.7;">
+			<strong>権限グループの選び方</strong><br>
+			<span style="display:inline-block;min-width:6em;">■ 居住者</span>… マンションの居住者（サイトを見るだけ）<br>
+			<span style="display:inline-block;min-width:6em;">■ 編集者</span>… 施工会社など、お知らせ等を投稿する担当者<br>
+			<span style="display:inline-block;min-width:6em;">■ 管理者</span>… MRCの管理スタッフ（設定・物件追加まで）
+		</p>
+	</div>
+	<?php
+}
+add_action( 'admin_notices', 'mrc_user_new_role_hint' );
+
