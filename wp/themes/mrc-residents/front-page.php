@@ -120,7 +120,7 @@ endif;
 				),
 			);
 			foreach ( $faqs as $i => $faq ) :
-				$open  = ( 0 === $i );
+				$open  = false; // 初期状態はすべて閉じる
 				$panel = 'faq-first-' . ( $i + 1 );
 				?>
 				<div class="accordion">
