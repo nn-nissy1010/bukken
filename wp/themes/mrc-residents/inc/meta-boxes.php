@@ -193,3 +193,13 @@ function mrc_qa_answer_label( $post ) {
 	<?php
 }
 add_action( 'edit_form_after_title', 'mrc_qa_answer_label' );
+
+/** Q&A編集画面では本文欄の「メディアを追加」ボタンを隠す（回答は文章のみ）。 */
+function mrc_qa_hide_media_button() {
+	$screen = get_current_screen();
+	if ( ! $screen || 'qa' !== $screen->post_type ) {
+		return;
+	}
+	echo '<style>#wp-content-media-buttons{display:none;}</style>';
+}
+add_action( 'admin_head', 'mrc_qa_hide_media_button' );
