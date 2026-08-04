@@ -30,7 +30,7 @@ if ( 'POST' === $_SERVER['REQUEST_METHOD'] && isset( $_POST['mrc_pub_nonce'] ) &
 		$error = '送信の確認に失敗しました。お手数ですが、もう一度「送信する」を押してください。';
 		$stage = 'confirm';
 	} elseif ( 'send' === $action ) {
-		$to      = get_option( 'admin_email' );
+		$to      = mrc_public_contact_recipient();
 		$subject = '【' . get_bloginfo( 'name' ) . '】ログイン前お問い合わせ';
 		$lines   = array(
 			'お名前: ' . ( '' !== $data['name'] ? $data['name'] : '（未入力）' ),

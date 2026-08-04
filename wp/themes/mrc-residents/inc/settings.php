@@ -24,21 +24,27 @@ function mrc_contact_types() {
 	);
 }
 
-/** 工事段階 */
-function mrc_contact_phases() {
-	return array(
-		'before' => '着工前',
-		'after'  => '着工後',
-	);
+/**
+ * 通知先の項目一覧（キー => 画面ラベル）。
+ * 会員「ご意見の窓口」の種別ごと＋ログイン前お問い合わせを、単一の情報源として扱う。
+ * 種別を増減した場合もこの一覧が自動追従する。
+ */
+function mrc_contact_recipient_fields() {
+	$fields = array();
+	foreach ( mrc_contact_types() as $key => $label ) {
+		$fields[ 'email_' . $key ] = $label;
+	}
+	$fields['email_public'] = 'ログイン前のお問い合わせ';
+	return $fields;
 }
 
-/** 通知先の既定値（着工前・全てMRC＝管理者メール／着工後は未設定） */
+/** 通知先の既定値（すべて空欄＝管理者メールにフォールバック） */
 function mrc_default_contact_settings() {
-	return array(
-		'phase'        => 'before',
-		'email_before' => get_option( 'admin_email' ),
-		'email_after'  => '',
-	);
+	$out = array();
+	foreach ( array_keys( mrc_contact_recipient_fields() ) as $key ) {
+		$out[ $key ] = '';
+	}
+	return $out;
 }
 
 /** 保存済み通知先（未設定は既定で補完） */
@@ -46,17 +52,23 @@ function mrc_get_contact_settings() {
 	return wp_parse_args( (array) get_option( 'mrc_contact_settings', array() ), mrc_default_contact_settings() );
 }
 
-/** 現在の工事段階（before/after） */
-function mrc_contact_current_phase() {
-	$s = mrc_get_contact_settings();
-	return ( 'after' === ( $s['phase'] ?? 'before' ) ) ? 'after' : 'before';
+/** 指定キーの送信先メール（未入力・不正時は管理者メールにフォールバック） */
+function mrc_contact_recipient_by_key( $key ) {
+	$s     = mrc_get_contact_settings();
+	$email = isset( $s[ $key ] ) ? $s[ $key ] : '';
+	return ! empty( $email ) ? $email : get_option( 'admin_email' );
 }
 
-/** 現在の段階に応じた送信先メール（着工前＝MRC／着工後＝施工会社） */
-function mrc_contact_recipient() {
-	$s     = mrc_get_contact_settings();
-	$email = ( 'after' === mrc_contact_current_phase() ) ? ( $s['email_after'] ?? '' ) : ( $s['email_before'] ?? '' );
-	return ! empty( $email ) ? $email : get_option( 'admin_email' );
+/** 会員「ご意見の窓口」：種別ごとの送信先メール */
+function mrc_contact_recipient_for( $type ) {
+	$types = mrc_contact_types();
+	$key   = isset( $types[ $type ] ) ? 'email_' . $type : 'email_other';
+	return mrc_contact_recipient_by_key( $key );
+}
+
+/** ログイン前お問い合わせの送信先メール */
+function mrc_public_contact_recipient() {
+	return mrc_contact_recipient_by_key( 'email_public' );
 }
 
 /**
@@ -261,11 +273,11 @@ function mrc_register_settings() {
 add_action( 'admin_init', 'mrc_register_settings' );
 
 function mrc_sanitize_contact_settings( $in ) {
-	return array(
-		'phase'        => ( isset( $in['phase'] ) && 'after' === $in['phase'] ) ? 'after' : 'before',
-		'email_before' => isset( $in['email_before'] ) ? sanitize_email( $in['email_before'] ) : '',
-		'email_after'  => isset( $in['email_after'] ) ? sanitize_email( $in['email_after'] ) : '',
-	);
+	$out = array();
+	foreach ( array_keys( mrc_contact_recipient_fields() ) as $key ) {
+		$out[ $key ] = isset( $in[ $key ] ) ? sanitize_email( $in[ $key ] ) : '';
+	}
+	return $out;
 }
 function mrc_sanitize_property_settings( $in ) {
 	$out = array();
@@ -288,39 +300,31 @@ function mrc_add_admin_pages() {
 add_action( 'admin_menu', 'mrc_add_admin_pages' );
 
 function mrc_render_contact_page() {
-	$s     = mrc_get_contact_settings();
-	$phase = mrc_contact_current_phase();
+	$s      = mrc_get_contact_settings();
+	$fields = mrc_contact_recipient_fields();
+	$admin  = get_option( 'admin_email' );
 	?>
 	<div class="wrap">
 		<h1>ご意見の窓口 通知先設定</h1>
-		<p>お問い合わせの送信先を、工事の段階に応じて切り替えます。<strong>着工したら「工事段階」を「着工後」に切り替えるだけ</strong>で、送信先が施工会社に変わります。</p>
+		<p>お問い合わせを「種別」ごとに、どのメールアドレスへ届けるかを設定します。<strong>空欄の項目は、自動的に管理者メール（<?php echo esc_html( $admin ); ?>）に届きます。</strong></p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'mrc_contact_group' ); ?>
 			<table class="form-table"><tbody>
+			<?php foreach ( $fields as $key => $label ) : ?>
 				<tr>
-					<th scope="row">工事段階</th>
+					<th scope="row"><label for="mc-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
 					<td>
-						<label style="margin-right:20px;"><input type="radio" name="mrc_contact_settings[phase]" value="before" <?php checked( $phase, 'before' ); ?>> 着工前（送信先：着工前の宛先）</label>
-						<label><input type="radio" name="mrc_contact_settings[phase]" value="after" <?php checked( $phase, 'after' ); ?>> 着工後（送信先：着工後の宛先）</label>
-						<p class="description">現在の送信先：<strong><?php echo esc_html( mrc_contact_recipient() ); ?></strong></p>
+						<input type="email" id="mc-<?php echo esc_attr( $key ); ?>" name="mrc_contact_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $s[ $key ] ?? '' ); ?>" class="regular-text" placeholder="<?php echo esc_attr( $admin ); ?>（未入力時はここに届きます）">
+						<p class="description">実際の送信先：<strong><?php echo esc_html( mrc_contact_recipient_by_key( $key ) ); ?></strong></p>
 					</td>
 				</tr>
-				<tr>
-					<th scope="row"><label for="mc-before">着工前の送信先</label></th>
-					<td>
-						<input type="email" id="mc-before" name="mrc_contact_settings[email_before]" value="<?php echo esc_attr( $s['email_before'] ?? '' ); ?>" class="regular-text" placeholder="例：株式会社MRC のメール">
-						<p class="description">着工前は、すべてのお問い合わせがこの宛先に届きます（通常は株式会社MRC）。</p>
-					</td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="mc-after">着工後の送信先</label></th>
-					<td>
-						<input type="email" id="mc-after" name="mrc_contact_settings[email_after]" value="<?php echo esc_attr( $s['email_after'] ?? '' ); ?>" class="regular-text" placeholder="例：施工会社 のメール">
-						<p class="description">着工後は、すべてのお問い合わせがこの宛先に届きます（通常は施工会社）。</p>
-					</td>
-				</tr>
+			<?php endforeach; ?>
 			</tbody></table>
-			<p class="description">※ 住民が選ぶ「種別（工事のこと／計画・全体／生活・管理／その他）」は分類・記録用として保持され、通知メールに記載されます。</p>
+			<p class="description">
+				例：「工事のこと」＝施工会社、「計画・全体のこと」「その他」「ログイン前のお問い合わせ」＝株式会社MRC、「生活・管理のこと」＝管理会社／管理組合、のように振り分けできます。<br>
+				工事会社が決まっていない段階では「工事のこと」を空欄（＝管理者メール）または株式会社MRC宛にしておき、決定後にこの画面で差し替えてください。<br>
+				メールアドレスの形式が正しくない場合は、保存時に空欄（＝管理者メール）として扱われます。
+			</p>
 			<?php submit_button(); ?>
 		</form>
 	</div>
@@ -383,14 +387,12 @@ add_action( 'template_redirect', 'mrc_apply_property_visibility', 20 );
 
 /* --- ご意見の窓口：メール送信 --- */
 function mrc_send_contact_mail( $type, $name, $room, $body ) {
-	$to      = mrc_contact_recipient();
+	$to      = mrc_contact_recipient_for( $type );
 	$types   = mrc_contact_types();
-	$phases  = mrc_contact_phases();
 	$label   = isset( $types[ $type ] ) ? $types[ $type ] : 'その他';
 	$subject = '【' . get_bloginfo( 'name' ) . '】ご意見の窓口: ' . $label;
 	$lines   = array(
 		'種別: ' . $label,
-		'工事段階: ' . $phases[ mrc_contact_current_phase() ],
 		'お名前: ' . ( '' !== $name ? $name : '（未入力）' ),
 		'部屋番号: ' . ( '' !== $room ? $room : '（未入力）' ),
 		'',

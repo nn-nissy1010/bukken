@@ -125,7 +125,7 @@ npx @wordpress/env run cli wp <command> --url=localhost:8888/house1   # wp-cli
 
 ### 物件基本設定・問い合わせ（`inc/settings.php`）
 - **物件基本設定**（管理メニュー「物件基本設定」）：ページ／CPTごとに「公開 ON/OFF」「メニュー表示 ON/OFF」を手動トグル。`mrc_page_is_public()` / `mrc_page_menu_visible()` でテンプレ・ヘッダーに反映。「工事に関するお知らせ」のみ既定OFF。
-- **ご意見の窓口 通知先**：工事段階（着工前／着工後）で送信先メールを切替（`mrc_contact_recipient()`）。種別（工事のこと／計画・全体／生活・管理／その他）は分類・記録用でメールに記載。
+- **ご意見の窓口 通知先**：**種別ごと**（工事のこと／計画・全体／生活・管理／その他）＋**ログイン前お問い合わせ**の送信先メールを、管理画面「物件基本設定›通知先設定」から個別に設定（`mrc_contact_settings` の `email_{種別}` / `email_public`）。宛先解決は `mrc_contact_recipient_for($type)`／`mrc_public_contact_recipient()`。各欄は**未入力・不正時は管理者メール（admin_email）にフォールバック**。項目一覧は `mrc_contact_recipient_fields()` を単一の情報源として `mrc_contact_types()` に自動追従。
 - **スパム対策**：ハニーポット＋送信時刻チェックが標準。ネットワーク共通の reCAPTCHA v3 キーを入れると自動で有効化（未設定時はハニーポットにフォールバック）。
 
 ### 管理画面の整理（`inc/admin.php`）
