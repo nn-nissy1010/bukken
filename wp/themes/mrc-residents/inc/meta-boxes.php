@@ -141,13 +141,55 @@ function mrc_video_thumb_url( $post_id = null ) {
 }
 
 /**
- * 資料・動画はブロックエディタを使わずクラシック編集にする。
- * （メタボックス「PDFファイル」「動画URL」をタイトル直下に大きく見せ、迷わない編集画面に）
+ * 資料・動画・Q&Aはブロックエディタを使わずクラシック編集にする。
+ * （資料/動画はメタボックスをタイトル直下に大きく見せ、Q&Aは本文欄の上に
+ *   「回答（A）」ラベルを差し込むため。いずれも迷わない編集画面にする）
  */
 function mrc_disable_block_editor( $use, $post_type ) {
-	if ( in_array( $post_type, array( 'document', 'video' ), true ) ) {
+	if ( in_array( $post_type, array( 'document', 'video', 'qa' ), true ) ) {
 		return false;
 	}
 	return $use;
 }
 add_filter( 'use_block_editor_for_post_type', 'mrc_disable_block_editor', 10, 2 );
+
+/* ============================================================
+   Q&A 編集画面：タイトル＝質問(Q)／本文＝回答(A) を明示化
+   （データ構造は変えず、記入欄が何を書く場所か一目で分かるようにする）
+   ============================================================ */
+
+/** タイトル欄のプレースホルダーを「質問（Q）」に差し替える。 */
+function mrc_qa_title_placeholder( $text, $post ) {
+	if ( $post instanceof WP_Post && 'qa' === $post->post_type ) {
+		return '質問（Q）を入力　例：工事の費用はどうなりますか？';
+	}
+	return $text;
+}
+add_filter( 'enter_title_here', 'mrc_qa_title_placeholder', 10, 2 );
+
+/** タイトル欄の上に、この画面の入力ルールを案内する。 */
+function mrc_qa_edit_guide( $post ) {
+	if ( ! ( $post instanceof WP_Post ) || 'qa' !== $post->post_type ) {
+		return;
+	}
+	?>
+	<div style="margin:12px 0;padding:12px 16px;border-left:4px solid #2271b1;background:#f0f6fc;font-size:14px;line-height:1.7;">
+		この画面は <strong>Q&amp;Aの1問</strong> です。<br>
+		<span style="display:inline-block;min-width:5.5em;font-weight:600;color:#1d4ed8;">■ 質問（Q）</span>… 下の<strong>タイトル欄</strong>に入力<br>
+		<span style="display:inline-block;min-width:5.5em;font-weight:600;color:#b45309;">■ 回答（A）</span>… さらに下の<strong>本文欄</strong>に入力
+	</div>
+	<?php
+}
+add_action( 'edit_form_top', 'mrc_qa_edit_guide' );
+
+/** 本文（回答）欄の直上に「回答（A）」の見出しを差し込む。 */
+function mrc_qa_answer_label( $post ) {
+	if ( ! ( $post instanceof WP_Post ) || 'qa' !== $post->post_type ) {
+		return;
+	}
+	?>
+	<h2 style="margin:20px 0 4px;font-size:15px;">回答（A）<span style="color:#b32d2e;">*</span></h2>
+	<p class="description" style="margin:0 0 8px;">この質問に対する回答を、下の本文欄に入力してください。</p>
+	<?php
+}
+add_action( 'edit_form_after_title', 'mrc_qa_answer_label' );
