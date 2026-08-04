@@ -26,7 +26,6 @@ echo "== テーマを同期（dev/ とローカル専用物は除外）=="
 rsync -avz --delete \
 	--exclude 'dev/' \
 	--exclude '.DS_Store' \
-	--exclude 'screenshot.png' \
 	-e "ssh -p ${SSH_PORT}" \
 	"$LOCAL_THEME" "${SSH_USER}@${SSH_HOST}:${REMOTE_THEME}"
 
