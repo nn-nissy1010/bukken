@@ -52,7 +52,8 @@ function mrc_get_contact_settings() {
 	return wp_parse_args( (array) get_option( 'mrc_contact_settings', array() ), mrc_default_contact_settings() );
 }
 
-/** 指定キーの送信先メール（未入力・不正時は管理者メールにフォールバック） */
+/** 指定キーの送信先メール。全項目必須（保存時に検証）だが、未設定サイト・複製直後などで
+ *  空欄が残っている場合にメールを失わないための最後の安全網として管理者メールへ寄せる。 */
 function mrc_contact_recipient_by_key( $key ) {
 	$s     = mrc_get_contact_settings();
 	$email = isset( $s[ $key ] ) ? $s[ $key ] : '';
@@ -69,6 +70,19 @@ function mrc_contact_recipient_for( $type ) {
 /** ログイン前お問い合わせの送信先メール */
 function mrc_public_contact_recipient() {
 	return mrc_contact_recipient_by_key( 'email_public' );
+}
+
+/** 通知先が未設定（空欄・不正）の項目ラベル一覧。全項目OKなら空配列。 */
+function mrc_contact_settings_missing() {
+	$s       = mrc_get_contact_settings();
+	$missing = array();
+	foreach ( mrc_contact_recipient_fields() as $key => $label ) {
+		$email = isset( $s[ $key ] ) ? $s[ $key ] : '';
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			$missing[] = $label;
+		}
+	}
+	return $missing;
 }
 
 /**
@@ -273,9 +287,25 @@ function mrc_register_settings() {
 add_action( 'admin_init', 'mrc_register_settings' );
 
 function mrc_sanitize_contact_settings( $in ) {
-	$out = array();
-	foreach ( array_keys( mrc_contact_recipient_fields() ) as $key ) {
-		$out[ $key ] = isset( $in[ $key ] ) ? sanitize_email( $in[ $key ] ) : '';
+	$fields  = mrc_contact_recipient_fields();
+	$out     = array();
+	$invalid = array();
+	foreach ( $fields as $key => $label ) {
+		$email = isset( $in[ $key ] ) ? sanitize_email( $in[ $key ] ) : '';
+		if ( empty( $email ) || ! is_email( $email ) ) {
+			$invalid[] = $label;
+		}
+		$out[ $key ] = $email;
+	}
+	// 全項目必須。1つでも空欄・不正なら保存を破棄し、既存設定を維持する。
+	if ( $invalid ) {
+		add_settings_error(
+			'mrc_contact_settings',
+			'mrc_contact_required',
+			'通知先メールは全項目が必須です。次の項目を正しいメールアドレスで入力してください：' . implode( '、', $invalid ),
+			'error'
+		);
+		return wp_parse_args( (array) get_option( 'mrc_contact_settings', array() ), mrc_default_contact_settings() );
 	}
 	return $out;
 }
@@ -299,31 +329,46 @@ function mrc_add_admin_pages() {
 }
 add_action( 'admin_menu', 'mrc_add_admin_pages' );
 
+/* --- 通知先が未設定なら管理画面に警告バナーを出す --- */
+function mrc_contact_settings_admin_notice() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	$missing = mrc_contact_settings_missing();
+	if ( ! $missing ) {
+		return;
+	}
+	$url = admin_url( 'admin.php?page=mrc-contact' );
+	echo '<div class="notice notice-warning"><p><strong>ご意見の窓口の通知先が未設定です。</strong> 次の項目にメールアドレスを設定してください：'
+		. esc_html( implode( '、', $missing ) )
+		. ' &nbsp;<a href="' . esc_url( $url ) . '">通知先設定を開く</a></p></div>';
+}
+add_action( 'admin_notices', 'mrc_contact_settings_admin_notice' );
+
 function mrc_render_contact_page() {
 	$s      = mrc_get_contact_settings();
 	$fields = mrc_contact_recipient_fields();
-	$admin  = get_option( 'admin_email' );
 	?>
 	<div class="wrap">
 		<h1>ご意見の窓口 通知先設定</h1>
-		<p>お問い合わせを「種別」ごとに、どのメールアドレスへ届けるかを設定します。<strong>空欄の項目は、自動的に管理者メール（<?php echo esc_html( $admin ); ?>）に届きます。</strong></p>
+		<?php settings_errors( 'mrc_contact_settings' ); ?>
+		<p>お問い合わせを「種別」ごとに、どのメールアドレスへ届けるかを設定します。<strong>全項目が必須です。空欄・不正な形式のままでは保存できません。</strong></p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'mrc_contact_group' ); ?>
 			<table class="form-table"><tbody>
 			<?php foreach ( $fields as $key => $label ) : ?>
 				<tr>
-					<th scope="row"><label for="mc-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label></th>
+					<th scope="row"><label for="mc-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?> <span style="color:#d63638;">*</span></label></th>
 					<td>
-						<input type="email" id="mc-<?php echo esc_attr( $key ); ?>" name="mrc_contact_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $s[ $key ] ?? '' ); ?>" class="regular-text" placeholder="<?php echo esc_attr( $admin ); ?>（未入力時はここに届きます）">
-						<p class="description">実際の送信先：<strong><?php echo esc_html( mrc_contact_recipient_by_key( $key ) ); ?></strong></p>
+						<input type="email" id="mc-<?php echo esc_attr( $key ); ?>" name="mrc_contact_settings[<?php echo esc_attr( $key ); ?>]" value="<?php echo esc_attr( $s[ $key ] ?? '' ); ?>" class="regular-text" placeholder="example@mrc-archi.com" required>
 					</td>
 				</tr>
 			<?php endforeach; ?>
 			</tbody></table>
 			<p class="description">
 				例：「工事のこと」＝施工会社、「計画・全体のこと」「その他」「ログイン前のお問い合わせ」＝株式会社MRC、「生活・管理のこと」＝管理会社／管理組合、のように振り分けできます。<br>
-				工事会社が決まっていない段階では「工事のこと」を空欄（＝管理者メール）または株式会社MRC宛にしておき、決定後にこの画面で差し替えてください。<br>
-				メールアドレスの形式が正しくない場合は、保存時に空欄（＝管理者メール）として扱われます。
+				工事会社が未定の段階では、いったん株式会社MRC宛（info@mrc-archi.com など）を入れておき、決定後にこの画面で差し替えてください。<br>
+				<strong>雛形サイトで全項目を設定しておけば、NS Cloner で複製した新しい物件にも引き継がれます。</strong>
 			</p>
 			<?php submit_button(); ?>
 		</form>
