@@ -188,7 +188,7 @@ function mrc_qa_answer_label( $post ) {
 		return;
 	}
 	?>
-	<h2 style="margin:20px 0 4px;font-size:15px;">回答（A）<span style="color:#b32d2e;">*</span></h2>
+	<h2 style="margin:8px 0 4px;font-size:15px;">回答（A）<span style="color:#b32d2e;">*</span></h2>
 	<p class="description" style="margin:0 0 8px;">この質問に対する回答を、下の本文欄に入力してください。</p>
 	<?php
 }
@@ -204,6 +204,11 @@ function mrc_qa_hide_media_button() {
 	if ( ! $screen || 'qa' !== $screen->post_type ) {
 		return;
 	}
-	echo '<style>#wp-content-editor-tools{display:none;}</style>';
+	echo '<style>'
+		. '#wp-content-editor-tools{display:none;}'      // メディア追加＋空タブの帯
+		. '#titlediv{margin-bottom:0;}'                   // タイトル欄下の余白
+		. '#titlediv .inside{margin-top:0;}'              // 新規時は空のパーマリンク枠の余白
+		. '#edit-slug-box{margin-top:0;}'                 // 同上（枠内側）
+		. '</style>';
 }
 add_action( 'admin_head', 'mrc_qa_hide_media_button' );
