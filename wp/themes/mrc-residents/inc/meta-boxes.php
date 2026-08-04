@@ -195,6 +195,16 @@ function mrc_qa_answer_label( $post ) {
 add_action( 'edit_form_after_title', 'mrc_qa_answer_label' );
 
 /**
+ * Q&A編集画面ではエディター拡張（editor-expand：追従ツールバー＋自動リサイズ）を無効化する。
+ * 拡張が有効だとツールバー分の高さを予約するため、ツールバー帯を隠すと予約分が空白として残る。
+ * 無効化すると本文欄は素直な固定高になり、余分な空きが出ない。
+ */
+function mrc_qa_disable_editor_expand( $expand, $post_type ) {
+	return ( 'qa' === $post_type ) ? false : $expand;
+}
+add_filter( 'wp_editor_expand', 'mrc_qa_disable_editor_expand', 10, 2 );
+
+/**
  * Q&A編集画面では本文欄上部のツールバー帯（メディアを追加＋Visual/Textタブ）を隠す。
  * このエディタはタブが空のため、帯だけ残ると不自然な余白になる。帯ごと非表示にし、
  * 見出し（回答A）の直下に本文欄が来るようにする。書式ボタンはエディタ本体側なので残る。
