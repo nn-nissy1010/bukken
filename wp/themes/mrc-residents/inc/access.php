@@ -168,3 +168,103 @@ function mrc_redirect_logged_in_from_front() {
 	}
 }
 add_action( 'template_redirect', 'mrc_redirect_logged_in_from_front' );
+
+/**
+ * ───────────────────────────────────────────────────────────────
+ * アカウント発行時の「初期パスワード設定メール」
+ * ───────────────────────────────────────────────────────────────
+ * マルチサイト標準の英語メールは使わず、日本語のブランドメールに一本化する。
+ * ・新規ユーザーは管理者が追加した時点で即時有効化（英語の確認リンクを介さない）。
+ *   → SMTP不達でもアカウント自体は作成され、管理者が手動でパスワードを配布できる。
+ * ・サイトに追加された各ユーザーへ、パスワード設定リンク付きの案内メールを送る（1ユーザー1回）。
+ */
+
+// 標準（英語）の確認メール・ウェルカムメールを抑止する。
+add_filter( 'wpmu_signup_user_notification', '__return_false' );
+add_filter( 'wpmu_welcome_user_notification', '__return_false' );
+
+/**
+ * 管理者がサイトに追加した新規ユーザーを、英語の確認メールを介さず即時有効化する。
+ * 有効化により add_user_to_blog が発火し、独自の設定メール送信につながる。
+ *
+ * @param string $user       申請ユーザー名
+ * @param string $user_email 申請メールアドレス
+ * @param string $key        有効化キー
+ * @param array  $meta       追加先サイト・ロール等のメタ
+ */
+function mrc_auto_activate_signup( $user, $user_email, $key, $meta ) {
+	if ( ! empty( $key ) ) {
+		wpmu_activate_signup( $key );
+	}
+}
+add_action( 'after_signup_user', 'mrc_auto_activate_signup', 10, 4 );
+
+/**
+ * サイトにユーザーが追加されたら、初期パスワード設定メールを送る（1ユーザー1回のみ）。
+ *
+ * add_user_to_blog アクションは、関数の引数順（$blog_id, $user_id, $role）とは異なり
+ * ($user_id, $role, $blog_id) の順でコールバックへ渡す点に注意。
+ *
+ * @param int    $user_id 対象ユーザーID
+ * @param string $role    付与ロール
+ * @param int    $blog_id 追加先サイトID
+ */
+function mrc_send_welcome_email( $user_id, $role, $blog_id ) {
+	// 既に送信済みなら二重送信しない（複数物件へ追加された場合も初回だけ）。
+	if ( get_user_meta( $user_id, 'mrc_welcome_email_sent', true ) ) {
+		return;
+	}
+
+	$user = get_userdata( $user_id );
+	if ( ! $user || '' === $user->user_email ) {
+		return;
+	}
+
+	// パスワード設定用のワンタイムキー付きURL（wp-login.php の標準リセット画面）。
+	$key = get_password_reset_key( $user );
+	if ( is_wp_error( $key ) ) {
+		return;
+	}
+	$reset_url = get_site_url(
+		$blog_id,
+		'wp-login.php?action=rp&key=' . $key . '&login=' . rawurlencode( $user->user_login )
+	);
+
+	$site_name = get_blog_option( $blog_id, 'blogname' );
+	$site_url  = get_site_url( $blog_id, '/' );
+	$greeting  = '' !== $user->display_name ? $user->display_name : $user->user_login;
+
+	$subject = '【' . $site_name . '】居住者専用サイト パスワード設定のお願い';
+	$lines   = array(
+		$greeting . ' 様',
+		'',
+		$site_name . ' の居住者専用サイトのアカウントを発行しました。',
+		'下記のリンクを開き、ご自身のパスワードを設定してください。',
+		'',
+		'▼ パスワード設定ページ',
+		$reset_url,
+		'',
+		'パスワード設定後は、居住者専用サイトのトップページにある',
+		'「居住者専用ログイン」から、次の情報でログインできます。',
+		'',
+		'　ログインID：' . $user->user_login,
+		'　パスワード：上記ページでご自身が設定したもの',
+		'',
+		'▼ 居住者専用サイト',
+		$site_url,
+		'',
+		'※このリンクは一定時間で無効になります。開けない場合は、サイト管理者までご連絡ください。',
+		'※このメールにお心当たりがない場合は、破棄してください。',
+		'',
+		'---',
+		$site_name,
+	);
+
+	$sent = wp_mail( $user->user_email, $subject, implode( "\n", $lines ) );
+
+	// 送信できたときだけ済みフラグを立てる（不達時は再追加でリトライできる）。
+	if ( $sent ) {
+		update_user_meta( $user_id, 'mrc_welcome_email_sent', time() );
+	}
+}
+add_action( 'add_user_to_blog', 'mrc_send_welcome_email', 10, 3 );
