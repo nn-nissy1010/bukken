@@ -46,8 +46,8 @@ bukken/
 - `setup.php` … テーマサポート、アセット読み込み（Noto Sans JP＋app.css＋main.js、`filemtime`でキャッシュバスティング）、サイトアイコンの共通配信、ナビメニュー登録。
 - `post-types.php` … カスタム投稿タイプ／タクソノミーの登録。
 - `access.php` … 居住者ログイン・会員ゲート・wp-admin締め出し・ログイン後リダイレクト・noindex/robots。**アカウント発行時の初期パスワード設定メール**（標準の英語確認/ウェルカムメールは無効化し、新規ユーザーを即時有効化して日本語のパスワード設定リンク付きメールを1ユーザー1回送信）。
-- `settings.php` … 物件基本設定、ご意見の窓口 通知先、スパム対策（ハニーポット＋任意reCAPTCHA v3）、問い合わせメール送信。
-- `admin.php` … 管理画面／ネットワーク管理の整理、新規物件サイトの自動設定、カスタマイザー（メインビジュアル）、NS Cloner日本語化。
+- `settings.php` … 物件基本設定、ご意見の窓口 通知先、スパム対策（ハニーポット＋任意reCAPTCHA v3）、問い合わせメール送信、**ログイン前トップ「はじめての方へ」FAQの編集**（物件ごと・追加/削除可能）。
+- `admin.php` … 管理画面／ネットワーク管理の整理、新規物件サイトの自動設定、カスタマイザー（メインビジュアル）、NS Cloner日本語化、**アップロード上限の引き上げ**（画像・PDF共通で約30MB）。
 - `meta-boxes.php` … 資料PDF・動画URLのメタボックスと、埋め込み／サムネ／ダウンロードURLのヘルパー。ブロックエディタ無効化。
 - `privacy.php` … 全物件共通のプライバシーポリシー本文（ネットワーク共通 site_option）。
 
@@ -128,6 +128,8 @@ npx @wordpress/env run cli wp <command> --url=localhost:8888/house1   # wp-cli
 - **ご意見の窓口 通知先**：**種別ごと**（工事のこと／計画・全体／生活・管理／その他）＋**ログイン前お問い合わせ**の送信先メールを、管理画面「物件基本設定›通知先設定」から個別に設定（`mrc_contact_settings` の `email_{種別}` / `email_public`）。宛先解決は `mrc_contact_recipient_for($type)`／`mrc_public_contact_recipient()`。各欄は**未入力・不正時は管理者メール（admin_email）にフォールバック**。項目一覧は `mrc_contact_recipient_fields()` を単一の情報源として `mrc_contact_types()` に自動追従。
 - **スパム対策**：ハニーポット＋送信時刻チェックが標準。ネットワーク共通の reCAPTCHA v3 キーを入れると自動で有効化（未設定時はハニーポットにフォールバック）。
 - **メール送信（本番SMTP）**：テーマには持たせない。本番は `deploy/mu-plugins/mrc-smtp.php`（ops専用mu-plugin）が wp-config の `MRC_SMTP_*`／`MRC_MAIL_*` 定数を読んでSMTP送信する（認証情報はGit・テーマに載せない設計。2026-08-04に本番で設定・実受信確認済み）。ローカルは `dev-mail` のMailpit mu-plugin。居住者への初期パスワード設定メール等は `wp_mail` を使うだけなので、この経路にそのまま乗る。
+- **アップロード上限**：マルチサイト既定1.5MB（`fileupload_maxk`）では資料PDF・メインビジュアルに不足するため、`inc/admin.php` の `mrc_max_upload_kb()` が `site_option_fileupload_maxk` を約30MBに底上げ（PHPの `upload_max_filesize`／`post_max_size` を超えないようクランプ）。画像・PDF共通の単一上限（種別ごとの個別上限は不可）。
+- **「はじめての方へ」FAQ**：ログイン前トップの当該セクションは `mrc_first_faqs`（物件ごとのオプション）で編集。管理画面「物件基本設定›はじめての方へ 編集」で行の追加・削除。未設定は `mrc_default_first_faqs()` の4問を既定表示、全削除でセクション非表示（`front-page.php` が `mrc_get_first_faqs()` を出力・回答は改行対応）。雛形で設定すればNS Clonerで複製先に引き継がれる。
 
 ### 管理画面の整理（`inc/admin.php`）
 - コメント全面無効化、不要な管理メニュー・ダッシュボードウィジェット撤去、MRC向け案内＋クイックリンクに置換。
