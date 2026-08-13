@@ -271,6 +271,64 @@ function mrc_page_is_public( $key ) {
 	return ! isset( $s[ $key ] ) || ! empty( $s[ $key ]['public'] );
 }
 
+/* --- 「はじめての方へ」FAQ（ログイン前トップ・物件ごとに編集可能） --- */
+
+/** 既定のFAQ（現行フロントの4問）。未設定の物件はこれを表示する。 */
+function mrc_default_first_faqs() {
+	return array(
+		array(
+			'q' => 'ID・パスワードはどこでもらえますか？',
+			'a' => '各住戸のポストに配布した書面（またはQRコード）に記載しています。お手元にない場合は、下の「お問い合わせ」からご連絡ください。',
+		),
+		array(
+			'q' => 'ログインのしかた',
+			'a' => '上の「居住者専用ログイン」に、配布したIDとパスワードを入力し「ログイン」を押してください。',
+		),
+		array(
+			'q' => 'ログインできないとき',
+			'a' => 'まずID・パスワードの打ち間違い（大文字・小文字、全角・半角）をご確認ください。それでもログインできない場合は、下の「お問い合わせ」からご連絡ください。',
+		),
+		array(
+			'q' => '家族や同居の方も見られますか？',
+			'a' => 'はい。1つの住戸につき、同じID・パスワードでご家族・同居の方もご利用いただけます。IDは住戸ごとにお配りしています。',
+		),
+	);
+}
+
+/** 表示用FAQ。一度も保存していなければ既定、保存済みならその内容（0件なら非表示）。 */
+function mrc_get_first_faqs() {
+	$saved = get_option( 'mrc_first_faqs', false );
+	if ( false === $saved ) {
+		return mrc_default_first_faqs();
+	}
+	$out = array();
+	foreach ( (array) $saved as $row ) {
+		$q = isset( $row['q'] ) ? (string) $row['q'] : '';
+		$a = isset( $row['a'] ) ? (string) $row['a'] : '';
+		if ( '' === $q && '' === $a ) {
+			continue;
+		}
+		$out[] = array( 'q' => $q, 'a' => $a );
+	}
+	return $out;
+}
+
+/** FAQ入力のサニタイズ（空行は除外・連番へ振り直し）。 */
+function mrc_sanitize_first_faqs( $in ) {
+	$out = array();
+	if ( is_array( $in ) ) {
+		foreach ( $in as $row ) {
+			$q = isset( $row['q'] ) ? sanitize_text_field( $row['q'] ) : '';
+			$a = isset( $row['a'] ) ? sanitize_textarea_field( $row['a'] ) : '';
+			if ( '' === $q && '' === $a ) {
+				continue;
+			}
+			$out[] = array( 'q' => $q, 'a' => $a );
+		}
+	}
+	return $out;
+}
+
 /* --- 設定の登録 --- */
 function mrc_register_settings() {
 	register_setting(
@@ -282,6 +340,11 @@ function mrc_register_settings() {
 		'mrc_property_group',
 		'mrc_property_settings',
 		array( 'type' => 'array', 'sanitize_callback' => 'mrc_sanitize_property_settings' )
+	);
+	register_setting(
+		'mrc_first_faq_group',
+		'mrc_first_faqs',
+		array( 'type' => 'array', 'sanitize_callback' => 'mrc_sanitize_first_faqs' )
 	);
 }
 add_action( 'admin_init', 'mrc_register_settings' );
@@ -326,6 +389,7 @@ function mrc_add_admin_pages() {
 	add_menu_page( '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page', 'dashicons-admin-home', 59 );
 	add_submenu_page( 'mrc-property', '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page' );
 	add_submenu_page( 'mrc-property', 'ご意見の窓口 通知先設定', '通知先設定', 'manage_options', 'mrc-contact', 'mrc_render_contact_page' );
+	add_submenu_page( 'mrc-property', 'はじめての方へ（ログイン前）編集', 'はじめての方へ 編集', 'manage_options', 'mrc-first-faq', 'mrc_render_first_faq_page' );
 }
 add_action( 'admin_menu', 'mrc_add_admin_pages' );
 
@@ -400,6 +464,59 @@ function mrc_render_property_page() {
 			<p class="description" style="margin-top:8px;">※「工事に関するお知らせ」は既定OFF。要望のある物件だけONにする運用です。</p>
 			<?php submit_button(); ?>
 		</form>
+	</div>
+	<?php
+}
+
+/* --- 「はじめての方へ」FAQ 編集画面（行の追加・削除ができる） --- */
+function mrc_render_first_faq_page() {
+	$faqs = mrc_get_first_faqs();
+	?>
+	<div class="wrap">
+		<h1>はじめての方へ（ログイン前トップ）編集</h1>
+		<?php settings_errors( 'mrc_first_faqs' ); ?>
+		<p>ログイン前トップの「はじめての方へ」に表示される質問・回答です。<strong>行の追加・削除</strong>ができ、回答は改行できます。すべて削除して保存すると、この欄は非表示になります。</p>
+		<form method="post" action="options.php">
+			<?php settings_fields( 'mrc_first_faq_group' ); ?>
+			<div id="mrc-faq-rows">
+				<?php foreach ( $faqs as $i => $row ) : ?>
+					<div class="mrc-faq-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 12px;max-width:760px;background:#fff;">
+						<p style="margin-top:0;"><label><strong>質問</strong><br><input type="text" name="mrc_first_faqs[<?php echo (int) $i; ?>][q]" value="<?php echo esc_attr( $row['q'] ); ?>" class="large-text"></label></p>
+						<p><label><strong>回答</strong><br><textarea name="mrc_first_faqs[<?php echo (int) $i; ?>][a]" rows="3" class="large-text"><?php echo esc_textarea( $row['a'] ); ?></textarea></label></p>
+						<button type="button" class="button-link mrc-faq-remove" style="color:#b32d2e;">この項目を削除</button>
+					</div>
+				<?php endforeach; ?>
+			</div>
+			<p><button type="button" class="button" id="mrc-faq-add">＋ 項目を追加</button></p>
+			<p class="description"><strong>雛形サイトで設定しておけば、NS Cloner で複製した新しい物件にも引き継がれます。</strong></p>
+			<?php submit_button(); ?>
+		</form>
+
+		<template id="mrc-faq-template">
+			<div class="mrc-faq-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 12px;max-width:760px;background:#fff;">
+				<p style="margin-top:0;"><label><strong>質問</strong><br><input type="text" name="mrc_first_faqs[__i__][q]" value="" class="large-text"></label></p>
+				<p><label><strong>回答</strong><br><textarea name="mrc_first_faqs[__i__][a]" rows="3" class="large-text"></textarea></label></p>
+				<button type="button" class="button-link mrc-faq-remove" style="color:#b32d2e;">この項目を削除</button>
+			</div>
+		</template>
+		<script>
+		( function () {
+			var wrap = document.getElementById( 'mrc-faq-rows' );
+			var tpl  = document.getElementById( 'mrc-faq-template' );
+			var idx  = <?php echo (int) count( $faqs ); ?>;
+			document.getElementById( 'mrc-faq-add' ).addEventListener( 'click', function () {
+				var div = document.createElement( 'div' );
+				div.innerHTML = tpl.innerHTML.replace( /__i__/g, idx++ ).trim();
+				wrap.appendChild( div.firstChild );
+			} );
+			wrap.addEventListener( 'click', function ( e ) {
+				if ( e.target.classList.contains( 'mrc-faq-remove' ) ) {
+					var row = e.target.closest( '.mrc-faq-row' );
+					if ( row ) { row.remove(); }
+				}
+			} );
+		} )();
+		</script>
 	</div>
 	<?php
 }

@@ -93,7 +93,11 @@ endif;
 		</div>
 	</section>
 
-	<!-- はじめての方へ（アコーディオン） -->
+	<!-- はじめての方へ（アコーディオン・物件基本設定で編集可能） -->
+	<?php
+	$faqs = mrc_get_first_faqs();
+	if ( $faqs ) :
+		?>
 	<section class="section section--alt" id="first">
 		<div class="container container--narrow">
 			<div class="section-heading">
@@ -101,44 +105,26 @@ endif;
 			</div>
 
 			<?php
-			$faqs = array(
-				array(
-					'q' => 'ID・パスワードはどこでもらえますか？',
-					'a' => '各住戸のポストに配布した書面（またはQRコード）に記載しています。お手元にない場合は、下の「お問い合わせ」からご連絡ください。',
-				),
-				array(
-					'q' => 'ログインのしかた',
-					'a' => '上の「居住者専用ログイン」に、配布したIDとパスワードを入力し「ログイン」を押してください。',
-				),
-				array(
-					'q' => 'ログインできないとき',
-					'a' => 'まずID・パスワードの打ち間違い（大文字・小文字、全角・半角）をご確認ください。それでもログインできない場合は、下の「お問い合わせ」からご連絡ください。',
-				),
-				array(
-					'q' => '家族や同居の方も見られますか？',
-					'a' => 'はい。1つの住戸につき、同じID・パスワードでご家族・同居の方もご利用いただけます。IDは住戸ごとにお配りしています。',
-				),
-			);
 			foreach ( $faqs as $i => $faq ) :
-				$open  = false; // 初期状態はすべて閉じる
 				$panel = 'faq-first-' . ( $i + 1 );
 				?>
 				<div class="accordion">
 					<h3>
-						<button class="accordion__trigger" data-accordion-trigger aria-expanded="<?php echo $open ? 'true' : 'false'; ?>" aria-controls="<?php echo esc_attr( $panel ); ?>">
+						<button class="accordion__trigger" data-accordion-trigger aria-expanded="false" aria-controls="<?php echo esc_attr( $panel ); ?>">
 							<?php echo esc_html( $faq['q'] ); ?>
 							<span class="accordion__icon" aria-hidden="true"></span>
 						</button>
 					</h3>
 					<div class="accordion__panel" id="<?php echo esc_attr( $panel ); ?>" role="region">
 						<div class="accordion__panel-inner">
-							<p><?php echo esc_html( $faq['a'] ); ?></p>
+							<p><?php echo nl2br( esc_html( $faq['a'] ) ); ?></p>
 						</div>
 					</div>
 				</div>
 			<?php endforeach; ?>
 		</div>
 	</section>
+	<?php endif; ?>
 
 	<!-- お問い合わせCTA -->
 	<section class="section section--home-cta">

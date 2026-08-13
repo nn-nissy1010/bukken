@@ -182,6 +182,28 @@ function mrc_configure_new_site( $new_site ) {
 add_action( 'wp_initialize_site', 'mrc_configure_new_site', 99 );
 
 /**
+ * マルチサイトの最大アップロードサイズを引き上げる（メインビジュアル画像・資料PDF共通）。
+ * 既定は約1.5MB（fileupload_maxk=1500）で資料PDFやヒーロー画像に不足するため、
+ * 約30MBまで許可する。サーバーの upload_max_filesize / post_max_size を超えないよう
+ * クランプする（0＝無制限は無視）。site_option を読み取り時にフィルタするので、
+ * 実際のアップロード判定（check_upload_size）とメディア画面の表示上限の両方に効く。
+ *
+ * @return int 許可する最大サイズ（KB単位）
+ */
+function mrc_max_upload_kb() {
+	$candidates = array( 30 * MB_IN_BYTES ); // 目標: 約30MB
+	foreach ( array( 'upload_max_filesize', 'post_max_size' ) as $ini ) {
+		$bytes = wp_convert_hr_to_bytes( ini_get( $ini ) );
+		if ( $bytes > 0 ) {
+			$candidates[] = $bytes;
+		}
+	}
+	return (int) floor( min( $candidates ) / KB_IN_BYTES );
+}
+add_filter( 'site_option_fileupload_maxk', 'mrc_max_upload_kb' );
+add_filter( 'default_site_option_fileupload_maxk', 'mrc_max_upload_kb' );
+
+/**
  * カスタマイザー：メインビジュアル画像（物件ごとに差し替え可能）
  */
 function mrc_customize_register( $wp_customize ) {
