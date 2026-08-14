@@ -454,7 +454,6 @@ add_action( 'admin_menu', 'mrc_add_pages_menu' );
 function mrc_editable_body_pages() {
 	return array(
 		'plan'           => '工事の計画',
-		'member'         => '会員トップ',
 		'contact'        => 'ご意見の窓口',
 		'contact-public' => 'お問い合わせ（ログイン前）',
 	);
@@ -469,6 +468,13 @@ function mrc_render_edit_pages_page() {
 		<table class="widefat striped" style="max-width:820px;margin-top:12px;">
 			<thead><tr><th>ページ</th><th style="width:260px;">操作</th></tr></thead>
 			<tbody>
+				<tr>
+					<td><strong>ログイン前トップ</strong><br><span class="description">サイトについて・はじめての方へ</span></td>
+					<td>
+						<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-first-faq' ) ); ?>">編集</a>
+						<a class="button" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">表示</a>
+					</td>
+				</tr>
 			<?php
 			foreach ( mrc_editable_body_pages() as $slug => $label ) :
 				$page = get_page_by_path( $slug );
