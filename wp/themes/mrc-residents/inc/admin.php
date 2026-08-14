@@ -84,6 +84,40 @@ function mrc_customize_dashboard() {
 }
 
 /**
+ * ダッシュボードを1カラムに固定する。
+ * 2カラム表示だと空の右カラムに「ボックスをここにドラッグ」というドロップ先の
+ * プレースホルダが出て紛らわしいため、常に1カラムにしてこれを出さない。
+ */
+function mrc_dashboard_one_column() {
+	return 1;
+}
+add_filter( 'get_user_option_screen_layout_dashboard', 'mrc_dashboard_one_column' );
+
+/** 画面オプションの「レイアウト（カラム数）」選択も隠す（1カラム固定のため）。 */
+function mrc_dashboard_hide_layout_option( $columns ) {
+	$columns['dashboard'] = 1;
+	return $columns;
+}
+add_filter( 'screen_layout_columns', 'mrc_dashboard_hide_layout_option' );
+
+/** 空のウィジェット枠と「ボックスをここにドラッグ」プレースホルダを非表示にする。 */
+function mrc_dashboard_hide_empty_container() {
+	$screen = get_current_screen();
+	if ( ! $screen || 'dashboard' !== $screen->id ) {
+		return;
+	}
+	echo '<style>'
+		. '#dashboard-widgets #postbox-container-2,'
+		. '#dashboard-widgets #postbox-container-3,'
+		. '#dashboard-widgets #postbox-container-4{display:none!important;}'
+		. '#dashboard-widgets .meta-box-sortables.empty-container{display:none!important;outline:none!important;}'
+		. '#dashboard-widgets .empty-container::after{content:""!important;}'
+		. '#dashboard-widgets .postbox-container{width:100%!important;}'
+		. '</style>';
+}
+add_action( 'admin_head', 'mrc_dashboard_hide_empty_container' );
+
+/**
  * 公開前チェックの各項目を評価して返す。
  * 各要素 = array( done(bool), label, hint, url )。
  */
