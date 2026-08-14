@@ -163,29 +163,24 @@ add_action( 'wp_dashboard_setup', 'mrc_customize_dashboard' );
 function mrc_dashboard_guide_html() {
 	?>
 	<p><strong><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong> の管理画面です。よく使う操作はこちら。</p>
-	<p style="display:flex;gap:8px;flex-wrap:wrap;">
-		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=news' ) ); ?>">お知らせを追加</a>
-		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=document' ) ); ?>">資料を追加</a>
-		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=video' ) ); ?>">動画を追加</a>
-	</p>
-	<p style="margin:0 0 4px;"><strong>ページの本文を編集</strong></p>
+	<p style="margin:0 0 4px;"><strong>コンテンツを追加</strong></p>
 	<p style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0;">
-		<?php
-		foreach ( mrc_editable_body_pages() as $mrc_slug => $mrc_label ) :
-			$mrc_page = get_page_by_path( $mrc_slug );
-			if ( ! $mrc_page ) {
-				continue;
-			}
-			?>
-			<a class="button" href="<?php echo esc_url( get_edit_post_link( $mrc_page->ID ) ); ?>"><?php echo esc_html( $mrc_label ); ?></a>
+		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=news' ) ); ?>">お知らせ</a>
+		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=document' ) ); ?>">資料</a>
+		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=video' ) ); ?>">動画</a>
+		<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=qa' ) ); ?>">Q&amp;A</a>
+	</p>
+	<p style="margin:12px 0 4px;"><strong>ページ・文言を編集</strong></p>
+	<p style="display:flex;gap:8px;flex-wrap:wrap;margin-top:0;">
+		<?php foreach ( mrc_content_edit_links() as $mrc_label => $mrc_url ) : ?>
+			<a class="button" href="<?php echo esc_url( $mrc_url ); ?>"><?php echo esc_html( $mrc_label ); ?></a>
 		<?php endforeach; ?>
 	</p>
 	<hr>
 	<p style="margin-bottom:0;">
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-property' ) ); ?>">物件基本設定</a>　｜
-		<a href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-first-faq' ) ); ?>">ログイン前トップ 編集</a>　｜
-		<a href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-edit-pages' ) ); ?>">ページ本文の編集</a>　｜
 		<a href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-contact' ) ); ?>">通知先設定</a>　｜
+		<a href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-edit-pages' ) ); ?>">ページ編集</a>　｜
 		<a href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">サイトを表示</a>
 	</p>
 	<?php

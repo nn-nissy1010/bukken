@@ -576,6 +576,25 @@ function mrc_editable_body_pages() {
 	);
 }
 
+/**
+ * 「文言を編集できる箇所」→編集画面URL（ラベル => URL・表示順）。
+ * ダッシュボード等の導線で使う。専用フォーム（ログイン前トップ／工事の計画）＋
+ * 本文編集ページ（ご意見の窓口／お問い合わせ）をまとめて返す。
+ */
+function mrc_content_edit_links() {
+	$links = array(
+		'ログイン前トップ' => admin_url( 'admin.php?page=mrc-first-faq' ),
+		'工事の計画'       => admin_url( 'admin.php?page=mrc-plan-edit' ),
+	);
+	foreach ( mrc_editable_body_pages() as $slug => $label ) {
+		$page = get_page_by_path( $slug );
+		if ( $page ) {
+			$links[ $label ] = get_edit_post_link( $page->ID, '' );
+		}
+	}
+	return $links;
+}
+
 /** ページ本文の編集画面（各ページの編集へのリンク集。削除・新規追加はさせない）。 */
 function mrc_render_edit_pages_page() {
 	?>
