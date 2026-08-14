@@ -60,7 +60,7 @@ endif;
 
 			<div class="login-box">
 				<h2>居住者専用ログイン</h2>
-				<p class="login-sub">配布されたID・パスワードでログインしてください。</p>
+				<p class="login-sub">ID（またはメールアドレス）とパスワードでログインしてください。</p>
 				<?php if ( ! empty( $GLOBALS['mrc_login_error'] ) ) : ?>
 					<p class="login-error" role="alert"><?php echo esc_html( $GLOBALS['mrc_login_error'] ); ?></p>
 				<?php endif; ?>
@@ -77,7 +77,7 @@ endif;
 					</div>
 					<button type="submit" class="btn btn--primary btn--block">ログイン</button>
 				</form>
-				<p class="form-hint">ID・パスワードは、書面（またはQRコード）でお配りしています。</p>
+				<p class="form-hint">はじめての方は、ご登録のメールアドレスに届く「パスワード設定のご案内」メールからパスワードを設定してください。メールが見当たらない場合は、下の「お問い合わせ」からご連絡ください。</p>
 			</div>
 		</div>
 	</section>
