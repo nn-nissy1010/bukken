@@ -49,6 +49,7 @@ function mrc_register_post_types() {
 			'public'       => true,
 			'show_in_rest' => true,
 			'rewrite'      => array( 'slug' => 'news-category' ),
+			'meta_box_cb'  => 'mrc_radio_tax_meta_box', // 単一選択（ラジオ）に
 		)
 	);
 	register_taxonomy(
@@ -63,6 +64,7 @@ function mrc_register_post_types() {
 			'public'       => true,
 			'show_in_rest' => true,
 			'rewrite'      => array( 'slug' => 'document-category' ),
+			'meta_box_cb'  => 'mrc_radio_tax_meta_box', // 単一選択（ラジオ）に
 		)
 	);
 

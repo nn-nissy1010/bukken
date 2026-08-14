@@ -141,12 +141,13 @@ function mrc_video_thumb_url( $post_id = null ) {
 }
 
 /**
- * 資料・動画・Q&Aはブロックエディタを使わずクラシック編集にする。
+ * お知らせ・資料・動画・Q&Aはブロックエディタを使わずクラシック編集にする。
  * （資料/動画はメタボックスをタイトル直下に大きく見せ、Q&Aは本文欄の上に
- *   「回答（A）」ラベルを差し込むため。いずれも迷わない編集画面にする）
+ *   「回答（A）」ラベルを差し込むため。お知らせは種別を単一選択ラジオにするため
+ *   ＝ブロックエディタだと meta_box_cb が無視される。いずれも迷わない編集画面にする）
  */
 function mrc_disable_block_editor( $use, $post_type ) {
-	if ( in_array( $post_type, array( 'document', 'video', 'qa' ), true ) ) {
+	if ( in_array( $post_type, array( 'news', 'document', 'video', 'qa' ), true ) ) {
 		return false;
 	}
 	return $use;
@@ -222,3 +223,68 @@ function mrc_qa_hide_media_button() {
 		. '</style>';
 }
 add_action( 'admin_head', 'mrc_qa_hide_media_button' );
+
+/* ============================================================
+   種別（カテゴリー）を「単一選択（ラジオ）」にするメタボックス
+   news_category / doc_category は meta_box_cb でこれを使う。
+   ============================================================ */
+
+/** ラジオボタンで1つだけ選べる種別メタボックス。 */
+function mrc_radio_tax_meta_box( $post, $box ) {
+	$taxonomy = isset( $box['args']['taxonomy'] ) ? $box['args']['taxonomy'] : '';
+	$tax      = get_taxonomy( $taxonomy );
+	if ( ! $tax ) {
+		return;
+	}
+	$terms   = get_terms(
+		array(
+			'taxonomy'   => $taxonomy,
+			'hide_empty' => false,
+		)
+	);
+	$assigned = wp_get_object_terms( $post->ID, $taxonomy, array( 'fields' => 'ids' ) );
+	$current  = ( ! is_wp_error( $assigned ) && ! empty( $assigned ) ) ? (int) $assigned[0] : 0;
+	wp_nonce_field( 'mrc_radio_tax_' . $taxonomy, 'mrc_radio_tax_nonce_' . $taxonomy );
+	echo '<ul class="mrc-radio-tax" style="margin:6px 0; max-height:220px; overflow:auto;">';
+	printf(
+		'<li><label><input type="radio" name="mrc_radio_tax[%1$s]" value="0" %2$s> （未選択）</label></li>',
+		esc_attr( $taxonomy ),
+		checked( 0, $current, false )
+	);
+	if ( ! is_wp_error( $terms ) ) {
+		foreach ( $terms as $term ) {
+			printf(
+				'<li><label><input type="radio" name="mrc_radio_tax[%1$s]" value="%2$d" %3$s> %4$s</label></li>',
+				esc_attr( $taxonomy ),
+				(int) $term->term_id,
+				checked( (int) $term->term_id, $current, false ),
+				esc_html( $term->name )
+			);
+		}
+	}
+	echo '</ul>';
+	if ( current_user_can( $tax->cap->manage_terms ) ) {
+		printf(
+			'<p style="margin:8px 0 0;"><a href="%s">%s の追加・編集</a></p>',
+			esc_url( admin_url( 'edit-tags.php?taxonomy=' . $taxonomy . '&post_type=' . $post->post_type ) ),
+			esc_html( $tax->labels->name )
+		);
+	}
+}
+
+/** 単一選択の種別を保存（選択1つ、または未選択で解除）。 */
+function mrc_save_radio_tax( $post_id ) {
+	if ( ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) || ! isset( $_POST['mrc_radio_tax'] ) || ! is_array( $_POST['mrc_radio_tax'] ) ) {
+		return;
+	}
+	foreach ( wp_unslash( $_POST['mrc_radio_tax'] ) as $taxonomy => $term_id ) {
+		$taxonomy = sanitize_key( $taxonomy );
+		$nonce    = isset( $_POST[ 'mrc_radio_tax_nonce_' . $taxonomy ] ) ? $_POST[ 'mrc_radio_tax_nonce_' . $taxonomy ] : '';
+		if ( ! wp_verify_nonce( $nonce, 'mrc_radio_tax_' . $taxonomy ) || ! current_user_can( 'edit_post', $post_id ) || ! taxonomy_exists( $taxonomy ) ) {
+			continue;
+		}
+		$term_id = (int) $term_id;
+		wp_set_object_terms( $post_id, $term_id > 0 ? array( $term_id ) : array(), $taxonomy, false );
+	}
+}
+add_action( 'save_post', 'mrc_save_radio_tax' );
