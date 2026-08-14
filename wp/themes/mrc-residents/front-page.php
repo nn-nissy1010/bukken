@@ -85,10 +85,11 @@ endif;
 	<!-- サイトについて（キャッチコピー＋説明） -->
 	<section class="section" id="about">
 		<div class="container container--narrow">
+			<?php $mrc_about = mrc_get_front_about(); ?>
 			<div class="page-intro" style="margin-bottom:0;">
-				<p class="about-kicker">居住者専用ポータル</p>
-				<h1>大規模修繕工事の計画状況を、いつでもご確認いただけます</h1>
-				<p>このサイトは、<?php bloginfo( 'name' ); ?>にお住まいの皆さまへ、大規模修繕工事の計画に関するお知らせ・スケジュール・資料などをお届けする、居住者専用のサイトです。掲示板を見に行かなくても、スマートフォンやパソコンからいつでもご確認いただけます。</p>
+				<p class="about-kicker"><?php echo esc_html( $mrc_about['kicker'] ); ?></p>
+				<h1><?php echo esc_html( $mrc_about['heading'] ); ?></h1>
+				<p><?php echo nl2br( esc_html( $mrc_about['body'] ) ); ?></p>
 			</div>
 		</div>
 	</section>

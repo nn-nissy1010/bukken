@@ -329,6 +329,39 @@ function mrc_sanitize_first_faqs( $in ) {
 	return $out;
 }
 
+/* --- ログイン前トップ「サイトについて」（キャッチ・見出し・説明文） --- */
+
+/** 既定値。説明文には物件名を差し込む。 */
+function mrc_default_front_about() {
+	return array(
+		'kicker'  => '居住者専用ポータル',
+		'heading' => '大規模修繕工事の計画状況を、いつでもご確認いただけます',
+		'body'    => 'このサイトは、' . get_bloginfo( 'name' ) . 'にお住まいの皆さまへ、大規模修繕工事の計画に関するお知らせ・スケジュール・資料などをお届けする、居住者専用のサイトです。掲示板を見に行かなくても、スマートフォンやパソコンからいつでもご確認いただけます。',
+	);
+}
+
+/** 表示用。各項目とも未入力なら既定にフォールバック。 */
+function mrc_get_front_about() {
+	$saved   = (array) get_option( 'mrc_front_about', array() );
+	$default = mrc_default_front_about();
+	$out     = array();
+	foreach ( $default as $k => $v ) {
+		$val       = isset( $saved[ $k ] ) ? trim( (string) $saved[ $k ] ) : '';
+		$out[ $k ] = '' !== $val ? $val : $v;
+	}
+	return $out;
+}
+
+/** 入力のサニタイズ。 */
+function mrc_sanitize_front_about( $in ) {
+	$in = (array) $in;
+	return array(
+		'kicker'  => isset( $in['kicker'] ) ? sanitize_text_field( $in['kicker'] ) : '',
+		'heading' => isset( $in['heading'] ) ? sanitize_text_field( $in['heading'] ) : '',
+		'body'    => isset( $in['body'] ) ? sanitize_textarea_field( $in['body'] ) : '',
+	);
+}
+
 /* --- 設定の登録 --- */
 function mrc_register_settings() {
 	register_setting(
@@ -345,6 +378,11 @@ function mrc_register_settings() {
 		'mrc_first_faq_group',
 		'mrc_first_faqs',
 		array( 'type' => 'array', 'sanitize_callback' => 'mrc_sanitize_first_faqs' )
+	);
+	register_setting(
+		'mrc_first_faq_group',
+		'mrc_front_about',
+		array( 'type' => 'array', 'sanitize_callback' => 'mrc_sanitize_front_about' )
 	);
 }
 add_action( 'admin_init', 'mrc_register_settings' );
@@ -389,7 +427,7 @@ function mrc_add_admin_pages() {
 	add_menu_page( '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page', 'dashicons-admin-home', 59 );
 	add_submenu_page( 'mrc-property', '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page' );
 	add_submenu_page( 'mrc-property', 'ご意見の窓口 通知先設定', '通知先設定', 'manage_options', 'mrc-contact', 'mrc_render_contact_page' );
-	add_submenu_page( 'mrc-property', 'はじめての方へ（ログイン前）編集', 'はじめての方へ 編集', 'manage_options', 'mrc-first-faq', 'mrc_render_first_faq_page' );
+	add_submenu_page( 'mrc-property', 'ログイン前トップ 編集', 'ログイン前トップ 編集', 'manage_options', 'mrc-first-faq', 'mrc_render_first_faq_page' );
 }
 add_action( 'admin_menu', 'mrc_add_admin_pages' );
 
@@ -470,14 +508,36 @@ function mrc_render_property_page() {
 
 /* --- 「はじめての方へ」FAQ 編集画面（行の追加・削除ができる） --- */
 function mrc_render_first_faq_page() {
-	$faqs = mrc_get_first_faqs();
+	$faqs  = mrc_get_first_faqs();
+	$about = mrc_get_front_about();
 	?>
 	<div class="wrap">
-		<h1>はじめての方へ（ログイン前トップ）編集</h1>
+		<h1>ログイン前トップ 編集</h1>
 		<?php settings_errors( 'mrc_first_faqs' ); ?>
-		<p>ログイン前トップの「はじめての方へ」に表示される質問・回答です。<strong>行の追加・削除</strong>ができ、回答は改行できます。すべて削除して保存すると、この欄は非表示になります。</p>
+		<p>ログイン前トップ（未ログインの方が見るページ）に表示される文言を編集します。</p>
 		<form method="post" action="options.php">
 			<?php settings_fields( 'mrc_first_faq_group' ); ?>
+
+			<h2 style="margin-top:24px;">サイトについて</h2>
+			<p class="description">ヒーロー下の「サイトについて」に表示される文言です。空欄にすると標準の文言に戻ります。</p>
+			<table class="form-table" style="max-width:760px;"><tbody>
+				<tr>
+					<th scope="row"><label for="fa-kicker">小見出し</label></th>
+					<td><input type="text" id="fa-kicker" name="mrc_front_about[kicker]" value="<?php echo esc_attr( $about['kicker'] ); ?>" class="large-text"></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="fa-heading">見出し</label></th>
+					<td><input type="text" id="fa-heading" name="mrc_front_about[heading]" value="<?php echo esc_attr( $about['heading'] ); ?>" class="large-text"></td>
+				</tr>
+				<tr>
+					<th scope="row"><label for="fa-body">説明文</label></th>
+					<td><textarea id="fa-body" name="mrc_front_about[body]" rows="4" class="large-text"><?php echo esc_textarea( $about['body'] ); ?></textarea>
+					<p class="description">改行できます。</p></td>
+				</tr>
+			</tbody></table>
+
+			<h2 style="margin-top:32px;">はじめての方へ（よくある質問）</h2>
+			<p class="description"><strong>行の追加・削除</strong>ができ、回答は改行できます。すべて削除して保存すると、この欄は非表示になります。</p>
 			<div id="mrc-faq-rows">
 				<?php foreach ( $faqs as $i => $row ) : ?>
 					<div class="mrc-faq-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 12px;max-width:760px;background:#fff;">
