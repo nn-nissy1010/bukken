@@ -428,8 +428,26 @@ function mrc_add_admin_pages() {
 	add_submenu_page( 'mrc-property', '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page' );
 	add_submenu_page( 'mrc-property', 'ご意見の窓口 通知先設定', '通知先設定', 'manage_options', 'mrc-contact', 'mrc_render_contact_page' );
 	add_submenu_page( 'mrc-property', 'ログイン前トップ 編集', 'ログイン前トップ 編集', 'manage_options', 'mrc-first-faq', 'mrc_render_first_faq_page' );
-	add_submenu_page( 'mrc-property', 'ページ本文の編集', 'ページ本文の編集', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page' );
 }
+
+/**
+ * サイドバーに「ページ編集」トップレベルメニューを追加。
+ * 一覧（本文編集リンク集）＋各ページの編集画面へ直接遷移するサブメニューを出す。
+ * 固定ページの標準メニューは誤操作防止で非表示のため、本文編集はここから行う。
+ */
+function mrc_add_pages_menu() {
+	add_menu_page( 'ページ編集', 'ページ編集', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page', 'dashicons-admin-page', 58 );
+	// 先頭サブメニューのラベルを「一覧」に整える。
+	add_submenu_page( 'mrc-edit-pages', 'ページ本文の編集', '一覧', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page' );
+	// 各ページの編集画面へ直接遷移。
+	foreach ( mrc_editable_body_pages() as $slug => $label ) {
+		$page = get_page_by_path( $slug );
+		if ( $page ) {
+			add_submenu_page( 'mrc-edit-pages', $label . 'の本文を編集', $label, 'edit_pages', 'post.php?post=' . (int) $page->ID . '&action=edit' );
+		}
+	}
+}
+add_action( 'admin_menu', 'mrc_add_pages_menu' );
 
 /** 本文を編集できる固定ページ（スラッグ => ラベル）。 */
 function mrc_editable_body_pages() {
