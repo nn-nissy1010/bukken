@@ -540,7 +540,7 @@ function mrc_sanitize_property_settings( $in ) {
 /* --- 管理メニューの登録 --- */
 function mrc_add_admin_pages() {
 	// トップレベル「物件基本設定」。配下に 物件基本設定／通知先設定 をまとめる。
-	add_menu_page( '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page', 'dashicons-admin-home', 58 );
+	add_menu_page( '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page', 'dashicons-admin-home', 59 );
 	add_submenu_page( 'mrc-property', '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page' );
 	add_submenu_page( 'mrc-property', 'ご意見の窓口 通知先設定', '通知先設定', 'manage_options', 'mrc-contact', 'mrc_render_contact_page' );
 }
@@ -551,7 +551,7 @@ function mrc_add_admin_pages() {
  * 固定ページの標準メニューは誤操作防止で非表示のため、本文編集はここから行う。
  */
 function mrc_add_pages_menu() {
-	add_menu_page( 'ページ編集', 'ページ編集', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page', 'dashicons-admin-page', 58.1 );
+	add_menu_page( 'ページ編集', 'ページ編集', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page', 'dashicons-admin-page', 58 );
 	// 先頭サブメニューのラベルを「一覧」に整える。
 	add_submenu_page( 'mrc-edit-pages', 'ページ本文の編集', '一覧', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page' );
 	// ログイン前トップ（サイトについて・はじめての方へ）もここから編集。

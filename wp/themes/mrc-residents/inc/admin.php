@@ -272,6 +272,7 @@ function mrc_custom_menu_order( $menu_order ) {
 		'index.php',                     // ダッシュボード
 		'users.php',                     // ユーザー（最上位）
 		'mrc-property',                  // 物件基本設定
+		'mrc-edit-pages',                // ページ編集（物件基本設定の直後）
 		'edit.php?post_type=news',       // お知らせ
 		'edit.php?post_type=document',   // 資料
 		'edit.php?post_type=video',      // 動画
