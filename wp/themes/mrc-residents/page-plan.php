@@ -40,17 +40,17 @@ get_header();
 
 					<div class="grid grid--3" style="margin-top:28px;">
 						<div class="card purpose-card">
-							<span class="purpose-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+							<span class="purpose-icon purpose-icon--safe" aria-hidden="true"></span>
 							<h3>建物を長く安全に</h3>
 							<p>外壁や防水の劣化を放置せず、雨漏りや事故を防いで、安心して暮らせる状態を保ちます。</p>
 						</div>
 						<div class="card purpose-card">
-							<span class="purpose-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></span>
+							<span class="purpose-icon purpose-icon--value" aria-hidden="true"></span>
 							<h3>資産価値を守る</h3>
 							<p>計画的に修繕することで、マンションの資産としての価値が下がるのを防ぎます。</p>
 						</div>
 						<div class="card purpose-card">
-							<span class="purpose-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-6 8 6"/><path d="M6 10v9h12v-9"/><path d="M10 19v-5h4v5"/></svg></span>
+							<span class="purpose-icon purpose-icon--home" aria-hidden="true"></span>
 							<h3>快適な住環境</h3>
 							<p>美観や住み心地を維持し、これからも気持ちよく暮らせる環境を整えます。</p>
 						</div>
