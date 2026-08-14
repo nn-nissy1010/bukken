@@ -184,6 +184,17 @@ add_filter( 'wpmu_signup_user_notification', '__return_false' );
 add_filter( 'wpmu_welcome_user_notification', '__return_false' );
 
 /**
+ * パスワード設定/再設定リンクの有効期限を延長する（WP既定1日→3日）。
+ * 居住者（特に高齢の方）がメール確認に時間がかかっても、初期パスワード設定
+ * リンクが失効しにくいようにする。本ネットワークのパスワードリンクは実質この
+ * 用途のみのため一律延長で問題ない。失効時は管理者がユーザーを再追加すれば再送される。
+ */
+function mrc_password_reset_expiration( $seconds ) {
+	return 3 * DAY_IN_SECONDS;
+}
+add_filter( 'password_reset_expiration', 'mrc_password_reset_expiration' );
+
+/**
  * 管理者がサイトに追加した新規ユーザーを、英語の確認メールを介さず即時有効化する。
  * 有効化により add_user_to_blog が発火し、独自の設定メール送信につながる。
  *

@@ -74,9 +74,99 @@ function mrc_customize_dashboard() {
 	remove_meta_box( 'dashboard_primary', 'dashboard', 'side' );           // WordPress イベントとニュース
 
 	wp_add_dashboard_widget( 'mrc_dashboard_guide', 'この居住者専用サイトの管理', 'mrc_dashboard_guide_html' );
+	// メインサイト（雛形）では公開前提の設定がないため、物件サイトのみ表示。
+	if ( ! is_main_site() ) {
+		wp_add_dashboard_widget( 'mrc_dashboard_readiness', '公開前チェック（この物件の準備状況）', 'mrc_dashboard_readiness_html' );
+	}
 
 	// ようこそパネルを非表示（この時点なら既定アクションが登録済みで確実に外れる）
 	remove_action( 'welcome_panel', 'wp_welcome_panel' );
+}
+
+/**
+ * 公開前チェックの各項目を評価して返す。
+ * 各要素 = array( done(bool), label, hint, url )。
+ */
+function mrc_readiness_items() {
+	$items = array();
+
+	// 居住者アカウント
+	$subs    = count_users();
+	$sub_num = isset( $subs['avail_roles']['subscriber'] ) ? (int) $subs['avail_roles']['subscriber'] : 0;
+	$items[] = array(
+		'done'  => $sub_num > 0,
+		'label' => '居住者アカウントの登録',
+		'hint'  => $sub_num > 0 ? ( $sub_num . '人 登録済み' ) : 'まだ0人。追加すると本人に設定メールが届きます',
+		'url'   => admin_url( 'user-new.php' ),
+	);
+
+	// ご意見の窓口 通知先
+	$missing = function_exists( 'mrc_contact_settings_missing' ) ? mrc_contact_settings_missing() : array();
+	$items[] = array(
+		'done'  => empty( $missing ),
+		'label' => 'ご意見の窓口 通知先メール',
+		'hint'  => empty( $missing ) ? '設定済み' : ( '未設定：' . implode( '、', $missing ) ),
+		'url'   => admin_url( 'admin.php?page=mrc-contact' ),
+	);
+
+	// メインビジュアル
+	$has_hero = (bool) get_theme_mod( 'mrc_hero_image' );
+	$items[]  = array(
+		'done'  => $has_hero,
+		'label' => 'メインビジュアル画像',
+		'hint'  => $has_hero ? '設定済み' : '既定のサンプル画像のまま',
+		'url'   => admin_url( 'customize.php?autofocus[control]=mrc_hero_image' ),
+	);
+
+	// コンテンツ（お知らせ／資料／動画／Q&A のいずれか投稿があるか）
+	$content_total = 0;
+	foreach ( array( 'news', 'document', 'video', 'qa' ) as $pt ) {
+		$content_total += (int) wp_count_posts( $pt )->publish;
+	}
+	$items[] = array(
+		'done'  => $content_total > 0,
+		'label' => 'コンテンツの投入（お知らせ・資料など）',
+		'hint'  => $content_total > 0 ? ( '公開 ' . $content_total . '件' ) : 'まだ0件',
+		'url'   => admin_url( 'edit.php?post_type=news' ),
+	);
+
+	// 工事の計画ページ本文
+	$plan      = get_page_by_path( 'plan' );
+	$plan_done = $plan && '' !== trim( wp_strip_all_tags( (string) $plan->post_content ) );
+	$plan_url  = $plan ? get_edit_post_link( $plan->ID, '' ) : '';
+	$items[]   = array(
+		'done'  => $plan_done,
+		'label' => '「工事の計画」ページの本文',
+		'hint'  => $plan_done ? '入力済み' : '空のまま',
+		'url'   => $plan_url ? $plan_url : admin_url( 'edit.php?post_type=page' ),
+	);
+
+	return $items;
+}
+
+/** 公開前チェックのウィジェット本体。 */
+function mrc_dashboard_readiness_html() {
+	$items = mrc_readiness_items();
+	$done  = 0;
+	foreach ( $items as $it ) {
+		if ( $it['done'] ) {
+			$done++;
+		}
+	}
+	$total = count( $items );
+	?>
+	<p style="margin-top:0;">実居住者に公開する前に、この物件で必要な設定・コンテンツの状況です。<strong><?php echo (int) $done; ?>/<?php echo (int) $total; ?> 完了</strong></p>
+	<ul style="margin:0;">
+		<?php foreach ( $items as $it ) : ?>
+			<li style="padding:6px 0;border-top:1px solid #f0f0f1;">
+				<span style="font-size:15px;<?php echo $it['done'] ? 'color:#008a20;' : 'color:#b32d2e;'; ?>"><?php echo $it['done'] ? '✓' : '⚠'; ?></span>
+				<a href="<?php echo esc_url( $it['url'] ); ?>"><?php echo esc_html( $it['label'] ); ?></a>
+				<span class="description">— <?php echo esc_html( $it['hint'] ); ?></span>
+			</li>
+		<?php endforeach; ?>
+	</ul>
+	<p class="description" style="margin-bottom:0;">※このチェックは目安です。すべて完了してから、居住者へIDをお配りください。</p>
+	<?php
 }
 add_action( 'wp_dashboard_setup', 'mrc_customize_dashboard' );
 
