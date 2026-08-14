@@ -2,7 +2,8 @@
 /**
  * 工事の計画（固定ページ / slug: plan）
  * 本文は固定ページの内容で差し替え可能。未入力なら共通の定型説明を表示する。
- * 説明会資料のダウンロード（機能部品）は常に表示。
+ * 説明会資料のダウンロード（機能部品）は常に表示し、既定表示時の並び順は従来どおり
+ * （大規模修繕とは → 主な工事の対象 → 説明会の資料 → 工事の流れ）を維持する。
  *
  * @package mrc-residents
  */
@@ -68,8 +69,46 @@ get_header();
 						<li>給排水設備</li>
 					</ul>
 				</section>
+			<?php endif; ?>
 
-				<section style="margin-bottom:48px;">
+			<!-- 説明会の資料（機能部品・常時表示） -->
+			<section<?php echo mrc_has_page_body() ? '' : ' style="margin-bottom:48px;"'; ?>>
+				<div class="section-heading"><h2>くわしい内容は「説明会の資料」で</h2></div>
+				<p style="margin-bottom:16px;">工事の対象箇所や具体的な内容は、調査・診断や説明会の資料にまとめています。下記からダウンロードいただけます（いずれもPDF）。</p>
+				<div class="card" style="padding:8px 16px;">
+					<ul class="doc-list">
+						<?php
+						$docs = new WP_Query(
+							array(
+								'post_type'      => 'document',
+								'posts_per_page' => 3,
+							)
+						);
+						if ( $docs->have_posts() ) :
+							while ( $docs->have_posts() ) :
+								$docs->the_post();
+								?>
+								<li class="doc-item">
+									<span class="badge badge--file">PDF</span>
+									<span class="doc-name"><?php the_title(); ?></span>
+									<a href="<?php the_permalink(); ?>" class="btn btn--outline btn--sm">詳細</a>
+								<a href="<?php echo esc_url( mrc_doc_download_url() ); ?>" class="btn btn--navy btn--sm" download>ダウンロード</a>
+								</li>
+								<?php
+							endwhile;
+							wp_reset_postdata();
+						else :
+							echo '<li class="doc-item"><span class="doc-name">資料はまだありません。</span></li>';
+						endif;
+						?>
+					</ul>
+				</div>
+				<p style="margin-top:16px;"><a href="<?php echo esc_url( get_post_type_archive_link( 'document' ) ); ?>" class="cta-link">資料ダウンロード一覧へ</a></p>
+			</section>
+
+			<?php if ( ! mrc_has_page_body() ) : ?>
+				<!-- 工事の流れ（既定表示時のみ・従来どおり最後に配置） -->
+				<section>
 					<div class="section-heading"><h2>工事の流れ</h2></div>
 					<ol class="process-steps">
 						<li class="process-step">
@@ -118,41 +157,6 @@ get_header();
 					<p class="form-hint" style="margin-top:16px;">※ 着工の時期は決まり次第お知らせします。</p>
 				</section>
 			<?php endif; ?>
-
-			<!-- 説明会の資料（機能部品・常時表示） -->
-			<section>
-				<div class="section-heading"><h2>くわしい内容は「説明会の資料」で</h2></div>
-				<p style="margin-bottom:16px;">工事の対象箇所や具体的な内容は、調査・診断や説明会の資料にまとめています。下記からダウンロードいただけます（いずれもPDF）。</p>
-				<div class="card" style="padding:8px 16px;">
-					<ul class="doc-list">
-						<?php
-						$docs = new WP_Query(
-							array(
-								'post_type'      => 'document',
-								'posts_per_page' => 3,
-							)
-						);
-						if ( $docs->have_posts() ) :
-							while ( $docs->have_posts() ) :
-								$docs->the_post();
-								?>
-								<li class="doc-item">
-									<span class="badge badge--file">PDF</span>
-									<span class="doc-name"><?php the_title(); ?></span>
-									<a href="<?php the_permalink(); ?>" class="btn btn--outline btn--sm">詳細</a>
-								<a href="<?php echo esc_url( mrc_doc_download_url() ); ?>" class="btn btn--navy btn--sm" download>ダウンロード</a>
-								</li>
-								<?php
-							endwhile;
-							wp_reset_postdata();
-						else :
-							echo '<li class="doc-item"><span class="doc-name">資料はまだありません。</span></li>';
-						endif;
-						?>
-					</ul>
-				</div>
-				<p style="margin-top:16px;"><a href="<?php echo esc_url( get_post_type_archive_link( 'document' ) ); ?>" class="cta-link">資料ダウンロード一覧へ</a></p>
-			</section>
 		</div>
 	</article>
 </main>
