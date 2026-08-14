@@ -21,9 +21,9 @@ if ( ! function_exists( 'mrc_standard_page_content' ) ) {
 	return;
 }
 
-// member は元々イントロ本文が無い（ダッシュボード型）ため、既定では投入しない。
-// 必要なら管理画面から任意でイントロ本文を入力できる。
-$slugs = array( 'plan', 'contact', 'contact-public' );
+// plan は専用フォーム（mrc_plan_content）で編集するため本文投入の対象外。
+// member は元々イントロ本文が無い（ダッシュボード型）ため対象外。
+$slugs = array( 'contact', 'contact-public' );
 
 foreach ( $slugs as $slug ) {
 	$page = get_page_by_path( $slug );

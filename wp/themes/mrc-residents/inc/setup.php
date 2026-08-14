@@ -117,43 +117,13 @@ function mrc_the_page_body() {
  * 資料リスト・お知らせ一覧・問い合わせフォーム等の機能部品はテンプレート側で表示するため、
  * ここには含めない。
  *
- * @param string $slug ページスラッグ（plan / member / contact / contact-public）
+ * 工事の計画は専用フォーム（mrc_plan_content）で編集するため、ここには含めない。
+ *
+ * @param string $slug ページスラッグ（contact / contact-public）
  * @return string HTML（未定義スラッグは空文字）
  */
 function mrc_standard_page_content( $slug ) {
 	switch ( $slug ) {
-		case 'plan':
-			// 見た目そのまま（カード・工程ステップ）を再現。SVGはCSSクラスで描画するため
-			// 本文にSVGを置かず、どの権限で保存してもKSESで崩れない。wpautopの誤整形を
-			// 避けるため、ブロック要素の間に空行を入れず1行で保持する。
-			return '<p>当マンションで予定している大規模修繕工事について、目的や進め方をかんたんにご案内します。工事の詳しい内容は、住民説明会で使用した資料（PDF）をご覧ください。</p>'
-				. '<div style="margin-bottom:48px;">'
-				. '<div class="section-heading"><h2>大規模修繕工事とは（かんたんに）</h2></div>'
-				. '<p>マンションは、およそ12〜15年ごとに、外壁・防水・鉄部などをまとめて直す大規模修繕工事を行います。建物を長く安全に使い、資産としての価値を守るための工事です。専門家（設計監理者）が調査・診断し、住民説明会と総会での合意を経て進めます。</p>'
-				. '<div class="grid grid--3" style="margin-top:28px;">'
-				. '<div class="card purpose-card"><span class="purpose-icon purpose-icon--safe"></span><h3>建物を長く安全に</h3><p>外壁や防水の劣化を放置せず、雨漏りや事故を防いで、安心して暮らせる状態を保ちます。</p></div>'
-				. '<div class="card purpose-card"><span class="purpose-icon purpose-icon--value"></span><h3>資産価値を守る</h3><p>計画的に修繕することで、マンションの資産としての価値が下がるのを防ぎます。</p></div>'
-				. '<div class="card purpose-card"><span class="purpose-icon purpose-icon--home"></span><h3>快適な住環境</h3><p>美観や住み心地を維持し、これからも気持ちよく暮らせる環境を整えます。</p></div>'
-				. '</div></div>'
-				. '<div style="margin-bottom:48px;">'
-				. '<div class="section-heading"><h2>主な工事の対象</h2></div>'
-				. '<p style="margin-bottom:16px;">大規模修繕工事では、主に次のような箇所をまとめて点検・修繕します。（対象箇所は建物により異なります）</p>'
-				. '<ul class="spec-tags"><li>外壁塗装</li><li>防水工事（屋上・バルコニー）</li><li>鉄部塗装</li><li>タイル補修</li><li>シーリング打ち替え</li><li>給排水設備</li></ul>'
-				. '</div>'
-				. '<div>'
-				. '<div class="section-heading"><h2>工事の流れ</h2></div>'
-				. '<ol class="process-steps">'
-				. '<li class="process-step"><span class="process-step__num">1</span><div class="process-step__body"><h3 class="process-step__title">調査・診断</h3><p class="process-step__desc">専門家（設計監理者）が建物の状態を詳しく調べ、劣化の程度を診断します。</p></div></li>'
-				. '<li class="process-step"><span class="process-step__num">2</span><div class="process-step__body"><h3 class="process-step__title">改修設計</h3><p class="process-step__desc">調査・診断の結果をもとに、直す箇所や工事の方法・仕様を図面にまとめ、工事の内容を固めます。</p></div></li>'
-				. '<li class="process-step"><span class="process-step__num">3</span><div class="process-step__body"><h3 class="process-step__title">住民説明会</h3><p class="process-step__desc">調査の結果や工事の進め方を、居住者の皆さまにわかりやすくご説明します。</p></div></li>'
-				. '<li class="process-step"><span class="process-step__num">4</span><div class="process-step__body"><h3 class="process-step__title">施工会社の選定</h3><p class="process-step__desc">複数の会社を比較・検討し、工事を担当する施工会社を選びます。</p></div></li>'
-				. '<li class="process-step"><span class="process-step__num">5</span><div class="process-step__body"><h3 class="process-step__title">総会での決議</h3><p class="process-step__desc">工事請負契約の承認を総会で決議し、工事が正式に決まります。</p></div></li>'
-				. '<li class="process-step"><span class="process-step__num">6</span><div class="process-step__body"><h3 class="process-step__title">着工</h3><p class="process-step__desc">準備が整い次第、工事を開始します。工程はお知らせと掲示板でご案内します。</p></div></li>'
-				. '</ol>'
-				. '<p class="form-hint" style="margin-top:16px;">※ 着工の時期は決まり次第お知らせします。</p>'
-				. '</div>';
-		case 'member':
-			return '<p>会員専用ページへようこそ。大規模修繕工事に関する最新のお知らせ・資料・動画などを、こちらでご確認いただけます。</p>';
 		case 'contact':
 			return '<p>ご質問・ご意見をお送りください。内容の「種別」に応じて、担当の窓口へお届けします。</p>';
 		case 'contact-public':

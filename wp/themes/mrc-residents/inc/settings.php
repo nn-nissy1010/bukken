@@ -362,6 +362,117 @@ function mrc_sanitize_front_about( $in ) {
 	);
 }
 
+/* --- 工事の計画（専用フォームで編集。テンプレートが見た目を担保） --- */
+
+/** 標準内容（現行フロントの定型説明）。 */
+function mrc_default_plan_content() {
+	return array(
+		'lead'           => '当マンションで予定している大規模修繕工事について、目的や進め方をかんたんにご案内します。工事の詳しい内容は、住民説明会で使用した資料（PDF）をご覧ください。',
+		'intro_heading'  => '大規模修繕工事とは（かんたんに）',
+		'intro_body'     => 'マンションは、およそ12〜15年ごとに、外壁・防水・鉄部などをまとめて直す大規模修繕工事を行います。建物を長く安全に使い、資産としての価値を守るための工事です。専門家（設計監理者）が調査・診断し、住民説明会と総会での合意を経て進めます。',
+		'purposes'       => array(
+			array( 'title' => '建物を長く安全に', 'desc' => '外壁や防水の劣化を放置せず、雨漏りや事故を防いで、安心して暮らせる状態を保ちます。' ),
+			array( 'title' => '資産価値を守る', 'desc' => '計画的に修繕することで、マンションの資産としての価値が下がるのを防ぎます。' ),
+			array( 'title' => '快適な住環境', 'desc' => '美観や住み心地を維持し、これからも気持ちよく暮らせる環境を整えます。' ),
+		),
+		'target_heading' => '主な工事の対象',
+		'target_intro'   => '大規模修繕工事では、主に次のような箇所をまとめて点検・修繕します。（対象箇所は建物により異なります）',
+		'targets'        => array( '外壁塗装', '防水工事（屋上・バルコニー）', '鉄部塗装', 'タイル補修', 'シーリング打ち替え', '給排水設備' ),
+		'flow_heading'   => '工事の流れ',
+		'steps'          => array(
+			array( 'title' => '調査・診断', 'desc' => '専門家（設計監理者）が建物の状態を詳しく調べ、劣化の程度を診断します。' ),
+			array( 'title' => '改修設計', 'desc' => '調査・診断の結果をもとに、直す箇所や工事の方法・仕様を図面にまとめ、工事の内容を固めます。' ),
+			array( 'title' => '住民説明会', 'desc' => '調査の結果や工事の進め方を、居住者の皆さまにわかりやすくご説明します。' ),
+			array( 'title' => '施工会社の選定', 'desc' => '複数の会社を比較・検討し、工事を担当する施工会社を選びます。' ),
+			array( 'title' => '総会での決議', 'desc' => '工事請負契約の承認を総会で決議し、工事が正式に決まります。' ),
+			array( 'title' => '着工', 'desc' => '準備が整い次第、工事を開始します。工程はお知らせと掲示板でご案内します。' ),
+		),
+		'flow_note'      => '※ 着工の時期は決まり次第お知らせします。',
+	);
+}
+
+/** 表示用。未保存は標準、保存済みはスカラー空欄のみ標準にフォールバック。 */
+function mrc_get_plan_content() {
+	$saved   = get_option( 'mrc_plan_content', false );
+	$default = mrc_default_plan_content();
+	if ( false === $saved ) {
+		return $default;
+	}
+	$saved = (array) $saved;
+	$out   = array();
+	foreach ( array( 'lead', 'intro_heading', 'intro_body', 'target_heading', 'target_intro', 'flow_heading', 'flow_note' ) as $k ) {
+		$v         = isset( $saved[ $k ] ) ? trim( (string) $saved[ $k ] ) : '';
+		$out[ $k ] = '' !== $v ? $saved[ $k ] : $default[ $k ];
+	}
+	// 可変リスト（保存済みなら空でもその通りに反映＝該当部分は非表示）。
+	$out['purposes'] = array();
+	foreach ( ( isset( $saved['purposes'] ) && is_array( $saved['purposes'] ) ? $saved['purposes'] : array() ) as $r ) {
+		$t = isset( $r['title'] ) ? (string) $r['title'] : '';
+		$d = isset( $r['desc'] ) ? (string) $r['desc'] : '';
+		if ( '' !== $t || '' !== $d ) {
+			$out['purposes'][] = array( 'title' => $t, 'desc' => $d );
+		}
+	}
+	$out['steps'] = array();
+	foreach ( ( isset( $saved['steps'] ) && is_array( $saved['steps'] ) ? $saved['steps'] : array() ) as $r ) {
+		$t = isset( $r['title'] ) ? (string) $r['title'] : '';
+		$d = isset( $r['desc'] ) ? (string) $r['desc'] : '';
+		if ( '' !== $t || '' !== $d ) {
+			$out['steps'][] = array( 'title' => $t, 'desc' => $d );
+		}
+	}
+	$out['targets'] = array();
+	foreach ( ( isset( $saved['targets'] ) && is_array( $saved['targets'] ) ? $saved['targets'] : array() ) as $t ) {
+		$t = trim( (string) $t );
+		if ( '' !== $t ) {
+			$out['targets'][] = $t;
+		}
+	}
+	return $out;
+}
+
+/** 入力のサニタイズ。 */
+function mrc_sanitize_plan_content( $in ) {
+	$in  = (array) $in;
+	$out = array();
+	foreach ( array( 'lead', 'intro_body', 'target_intro' ) as $k ) {
+		$out[ $k ] = isset( $in[ $k ] ) ? sanitize_textarea_field( $in[ $k ] ) : '';
+	}
+	foreach ( array( 'intro_heading', 'target_heading', 'flow_heading', 'flow_note' ) as $k ) {
+		$out[ $k ] = isset( $in[ $k ] ) ? sanitize_text_field( $in[ $k ] ) : '';
+	}
+	$out['purposes'] = array();
+	if ( isset( $in['purposes'] ) && is_array( $in['purposes'] ) ) {
+		foreach ( $in['purposes'] as $r ) {
+			$t = isset( $r['title'] ) ? sanitize_text_field( $r['title'] ) : '';
+			$d = isset( $r['desc'] ) ? sanitize_textarea_field( $r['desc'] ) : '';
+			if ( '' !== $t || '' !== $d ) {
+				$out['purposes'][] = array( 'title' => $t, 'desc' => $d );
+			}
+		}
+	}
+	$out['steps'] = array();
+	if ( isset( $in['steps'] ) && is_array( $in['steps'] ) ) {
+		foreach ( $in['steps'] as $r ) {
+			$t = isset( $r['title'] ) ? sanitize_text_field( $r['title'] ) : '';
+			$d = isset( $r['desc'] ) ? sanitize_textarea_field( $r['desc'] ) : '';
+			if ( '' !== $t || '' !== $d ) {
+				$out['steps'][] = array( 'title' => $t, 'desc' => $d );
+			}
+		}
+	}
+	$out['targets'] = array();
+	if ( isset( $in['targets'] ) && is_array( $in['targets'] ) ) {
+		foreach ( $in['targets'] as $t ) {
+			$t = sanitize_text_field( $t );
+			if ( '' !== $t ) {
+				$out['targets'][] = $t;
+			}
+		}
+	}
+	return $out;
+}
+
 /* --- 設定の登録 --- */
 function mrc_register_settings() {
 	register_setting(
@@ -383,6 +494,11 @@ function mrc_register_settings() {
 		'mrc_first_faq_group',
 		'mrc_front_about',
 		array( 'type' => 'array', 'sanitize_callback' => 'mrc_sanitize_front_about' )
+	);
+	register_setting(
+		'mrc_plan_group',
+		'mrc_plan_content',
+		array( 'type' => 'array', 'sanitize_callback' => 'mrc_sanitize_plan_content' )
 	);
 }
 add_action( 'admin_init', 'mrc_register_settings' );
@@ -440,7 +556,9 @@ function mrc_add_pages_menu() {
 	add_submenu_page( 'mrc-edit-pages', 'ページ本文の編集', '一覧', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page' );
 	// ログイン前トップ（サイトについて・はじめての方へ）もここから編集。
 	add_submenu_page( 'mrc-edit-pages', 'ログイン前トップ 編集', 'ログイン前トップ', 'manage_options', 'mrc-first-faq', 'mrc_render_first_faq_page' );
-	// 各ページの編集画面へ直接遷移。
+	// 工事の計画（専用フォーム）。
+	add_submenu_page( 'mrc-edit-pages', '工事の計画 編集', '工事の計画', 'manage_options', 'mrc-plan-edit', 'mrc_render_plan_edit_page' );
+	// その他ページ（本文編集）の編集画面へ直接遷移。
 	foreach ( mrc_editable_body_pages() as $slug => $label ) {
 		$page = get_page_by_path( $slug );
 		if ( $page ) {
@@ -453,7 +571,6 @@ add_action( 'admin_menu', 'mrc_add_pages_menu' );
 /** 本文を編集できる固定ページ（スラッグ => ラベル）。 */
 function mrc_editable_body_pages() {
 	return array(
-		'plan'           => '工事の計画',
 		'contact'        => 'ご意見の窓口',
 		'contact-public' => 'お問い合わせ（ログイン前）',
 	);
@@ -475,6 +592,16 @@ function mrc_render_edit_pages_page() {
 						<a class="button" href="<?php echo esc_url( home_url( '/' ) ); ?>" target="_blank" rel="noopener">表示</a>
 					</td>
 				</tr>
+				<?php $mrc_plan_page = get_page_by_path( 'plan' ); ?>
+				<tr>
+					<td><strong>工事の計画</strong><br><span class="description">/plan/</span></td>
+					<td>
+						<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=mrc-plan-edit' ) ); ?>">編集</a>
+						<?php if ( $mrc_plan_page ) : ?>
+							<a class="button" href="<?php echo esc_url( get_permalink( $mrc_plan_page->ID ) ); ?>" target="_blank" rel="noopener">表示</a>
+						<?php endif; ?>
+					</td>
+				</tr>
 			<?php
 			foreach ( mrc_editable_body_pages() as $slug => $label ) :
 				$page = get_page_by_path( $slug );
@@ -492,7 +619,127 @@ function mrc_render_edit_pages_page() {
 			<?php endforeach; ?>
 			</tbody>
 		</table>
-		<p class="description" style="margin-top:12px;">※ 見た目の作り込み（工事の計画のカード等）はそのまま、文章だけを編集できます。本文を空にすると標準の説明文に戻ります。ページの削除・新規追加はできません（誤操作防止）。</p>
+		<p class="description" style="margin-top:12px;">※ 見た目の作り込み（工事の計画のカード等）はそのまま、文章だけを編集できます。ページの削除・新規追加はできません（誤操作防止）。</p>
+	</div>
+	<?php
+}
+
+/* --- 工事の計画 編集画面（専用フォーム・カード/対象/工程は追加・削除可能） --- */
+function mrc_render_plan_edit_page() {
+	$c = mrc_get_plan_content();
+	?>
+	<div class="wrap">
+		<h1>工事の計画 編集</h1>
+		<?php settings_errors( 'mrc_plan_content' ); ?>
+		<p>工事の計画ページの文言を編集します。<strong>カード・対象箇所・工程は行の追加／削除ができます</strong>。見出しなどを空欄で保存すると標準の文言に戻ります。資料ダウンロード欄は自動表示です。</p>
+		<form method="post" action="options.php">
+			<?php settings_fields( 'mrc_plan_group' ); ?>
+
+			<h2 style="margin-top:24px;">リード文</h2>
+			<textarea name="mrc_plan_content[lead]" rows="3" class="large-text" style="max-width:760px;"><?php echo esc_textarea( $c['lead'] ); ?></textarea>
+
+			<h2 style="margin-top:24px;">「大規模修繕工事とは」</h2>
+			<table class="form-table" style="max-width:760px;"><tbody>
+				<tr><th scope="row">見出し</th><td><input type="text" name="mrc_plan_content[intro_heading]" value="<?php echo esc_attr( $c['intro_heading'] ); ?>" class="large-text"></td></tr>
+				<tr><th scope="row">本文</th><td><textarea name="mrc_plan_content[intro_body]" rows="3" class="large-text"><?php echo esc_textarea( $c['intro_body'] ); ?></textarea></td></tr>
+			</tbody></table>
+
+			<h3>目的カード</h3>
+			<div class="mrc-rep" data-next="<?php echo (int) count( $c['purposes'] ); ?>">
+				<div class="mrc-rep-rows">
+					<?php foreach ( $c['purposes'] as $i => $r ) : ?>
+						<div class="mrc-rep-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 10px;max-width:760px;background:#fff;">
+							<p style="margin-top:0;"><label><strong>見出し</strong><br><input type="text" name="mrc_plan_content[purposes][<?php echo (int) $i; ?>][title]" value="<?php echo esc_attr( $r['title'] ); ?>" class="large-text"></label></p>
+							<p><label><strong>説明</strong><br><textarea name="mrc_plan_content[purposes][<?php echo (int) $i; ?>][desc]" rows="2" class="large-text"><?php echo esc_textarea( $r['desc'] ); ?></textarea></label></p>
+							<button type="button" class="button-link mrc-rep-remove" style="color:#b32d2e;">削除</button>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<p><button type="button" class="button mrc-rep-add">＋ カードを追加</button></p>
+				<template class="mrc-rep-tpl">
+					<div class="mrc-rep-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 10px;max-width:760px;background:#fff;">
+						<p style="margin-top:0;"><label><strong>見出し</strong><br><input type="text" name="mrc_plan_content[purposes][__i__][title]" value="" class="large-text"></label></p>
+						<p><label><strong>説明</strong><br><textarea name="mrc_plan_content[purposes][__i__][desc]" rows="2" class="large-text"></textarea></label></p>
+						<button type="button" class="button-link mrc-rep-remove" style="color:#b32d2e;">削除</button>
+					</div>
+				</template>
+			</div>
+
+			<h2 style="margin-top:24px;">「主な工事の対象」</h2>
+			<table class="form-table" style="max-width:760px;"><tbody>
+				<tr><th scope="row">見出し</th><td><input type="text" name="mrc_plan_content[target_heading]" value="<?php echo esc_attr( $c['target_heading'] ); ?>" class="large-text"></td></tr>
+				<tr><th scope="row">導入文</th><td><textarea name="mrc_plan_content[target_intro]" rows="2" class="large-text"><?php echo esc_textarea( $c['target_intro'] ); ?></textarea></td></tr>
+			</tbody></table>
+			<h3>対象箇所（タグ）</h3>
+			<div class="mrc-rep" data-next="<?php echo (int) count( $c['targets'] ); ?>">
+				<div class="mrc-rep-rows">
+					<?php foreach ( $c['targets'] as $i => $t ) : ?>
+						<div class="mrc-rep-row" style="display:flex;gap:8px;align-items:center;margin:0 0 8px;max-width:520px;">
+							<input type="text" name="mrc_plan_content[targets][<?php echo (int) $i; ?>]" value="<?php echo esc_attr( $t ); ?>" class="regular-text">
+							<button type="button" class="button-link mrc-rep-remove" style="color:#b32d2e;">削除</button>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<p><button type="button" class="button mrc-rep-add">＋ 対象を追加</button></p>
+				<template class="mrc-rep-tpl">
+					<div class="mrc-rep-row" style="display:flex;gap:8px;align-items:center;margin:0 0 8px;max-width:520px;">
+						<input type="text" name="mrc_plan_content[targets][__i__]" value="" class="regular-text">
+						<button type="button" class="button-link mrc-rep-remove" style="color:#b32d2e;">削除</button>
+					</div>
+				</template>
+			</div>
+
+			<h2 style="margin-top:24px;">「工事の流れ」</h2>
+			<table class="form-table" style="max-width:760px;"><tbody>
+				<tr><th scope="row">見出し</th><td><input type="text" name="mrc_plan_content[flow_heading]" value="<?php echo esc_attr( $c['flow_heading'] ); ?>" class="large-text"></td></tr>
+			</tbody></table>
+			<h3>工程ステップ</h3>
+			<div class="mrc-rep" data-next="<?php echo (int) count( $c['steps'] ); ?>">
+				<div class="mrc-rep-rows">
+					<?php foreach ( $c['steps'] as $i => $r ) : ?>
+						<div class="mrc-rep-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 10px;max-width:760px;background:#fff;">
+							<p style="margin-top:0;"><label><strong>見出し</strong><br><input type="text" name="mrc_plan_content[steps][<?php echo (int) $i; ?>][title]" value="<?php echo esc_attr( $r['title'] ); ?>" class="large-text"></label></p>
+							<p><label><strong>説明</strong><br><textarea name="mrc_plan_content[steps][<?php echo (int) $i; ?>][desc]" rows="2" class="large-text"><?php echo esc_textarea( $r['desc'] ); ?></textarea></label></p>
+							<button type="button" class="button-link mrc-rep-remove" style="color:#b32d2e;">削除</button>
+						</div>
+					<?php endforeach; ?>
+				</div>
+				<p><button type="button" class="button mrc-rep-add">＋ 工程を追加</button></p>
+				<template class="mrc-rep-tpl">
+					<div class="mrc-rep-row" style="border:1px solid #dcdcde;border-radius:6px;padding:12px 16px;margin:0 0 10px;max-width:760px;background:#fff;">
+						<p style="margin-top:0;"><label><strong>見出し</strong><br><input type="text" name="mrc_plan_content[steps][__i__][title]" value="" class="large-text"></label></p>
+						<p><label><strong>説明</strong><br><textarea name="mrc_plan_content[steps][__i__][desc]" rows="2" class="large-text"></textarea></label></p>
+						<button type="button" class="button-link mrc-rep-remove" style="color:#b32d2e;">削除</button>
+					</div>
+				</template>
+			</div>
+			<table class="form-table" style="max-width:760px;"><tbody>
+				<tr><th scope="row">工程の注記</th><td><input type="text" name="mrc_plan_content[flow_note]" value="<?php echo esc_attr( $c['flow_note'] ); ?>" class="large-text"></td></tr>
+			</tbody></table>
+
+			<?php submit_button(); ?>
+		</form>
+		<script>
+		( function () {
+			document.querySelectorAll( '.mrc-rep' ).forEach( function ( rep ) {
+				var rows = rep.querySelector( '.mrc-rep-rows' );
+				var tpl  = rep.querySelector( '.mrc-rep-tpl' );
+				var add  = rep.querySelector( '.mrc-rep-add' );
+				var next = parseInt( rep.getAttribute( 'data-next' ), 10 ) || 0;
+				add.addEventListener( 'click', function () {
+					var div = document.createElement( 'div' );
+					div.innerHTML = tpl.innerHTML.replace( /__i__/g, next++ ).trim();
+					rows.appendChild( div.firstChild );
+				} );
+				rows.addEventListener( 'click', function ( e ) {
+					if ( e.target.classList.contains( 'mrc-rep-remove' ) ) {
+						var row = e.target.closest( '.mrc-rep-row' );
+						if ( row ) { row.remove(); }
+					}
+				} );
+			} );
+		} )();
+		</script>
 	</div>
 	<?php
 }

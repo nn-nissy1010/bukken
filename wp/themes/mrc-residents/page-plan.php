@@ -1,14 +1,17 @@
 <?php
 /**
  * 工事の計画（固定ページ / slug: plan）
- * 本文は固定ページの内容で差し替え可能。未入力なら共通の定型説明を表示する。
- * 説明会資料のダウンロード（機能部品）は常に表示し、既定表示時の並び順は従来どおり
- * （大規模修繕とは → 主な工事の対象 → 説明会の資料 → 工事の流れ）を維持する。
+ * 文言は専用フォーム（物件基本設定›ページ編集›工事の計画）で編集し、`mrc_get_plan_content()`
+ * から取得。見た目（カード・工程ステップ）はテンプレートが担保する。
+ * 説明会資料のダウンロード（機能部品）は常に表示。
  *
  * @package mrc-residents
  */
 
 get_header();
+
+$plan       = mrc_get_plan_content();
+$mrc_icons  = array( 'purpose-icon--safe', 'purpose-icon--value', 'purpose-icon--home' );
 ?>
 
 <div class="container container--narrow">
@@ -25,54 +28,50 @@ get_header();
 		<div class="container container--narrow">
 			<div class="page-intro">
 				<h1>工事の計画について</h1>
-				<?php if ( ! mrc_has_page_body() ) : ?>
-					<p class="lead"><?php bloginfo( 'name' ); ?>で予定している大規模修繕工事について、目的や進め方をかんたんにご案内します。工事の詳しい内容は、住民説明会で使用した資料（PDF）をご覧ください。</p>
+				<?php if ( '' !== trim( (string) $plan['lead'] ) ) : ?>
+					<p class="lead"><?php echo nl2br( esc_html( $plan['lead'] ) ); ?></p>
 				<?php endif; ?>
 			</div>
 
-			<?php if ( mrc_has_page_body() ) : ?>
-				<div class="page-content" style="margin-bottom:48px;"><?php mrc_the_page_body(); ?></div>
-			<?php else : ?>
-				<!-- 既定の定型説明（本文未入力時） -->
-				<section style="margin-bottom:48px;">
-					<div class="section-heading"><h2>大規模修繕工事とは（かんたんに）</h2></div>
-					<p>マンションは、およそ12〜15年ごとに、外壁・防水・鉄部などをまとめて直す大規模修繕工事を行います。建物を長く安全に使い、資産としての価値を守るための工事です。専門家（設計監理者）が調査・診断し、住民説明会と総会での合意を経て進めます。</p>
+			<section style="margin-bottom:48px;">
+				<?php if ( '' !== trim( (string) $plan['intro_heading'] ) ) : ?>
+					<div class="section-heading"><h2><?php echo esc_html( $plan['intro_heading'] ); ?></h2></div>
+				<?php endif; ?>
+				<?php if ( '' !== trim( (string) $plan['intro_body'] ) ) : ?>
+					<p><?php echo nl2br( esc_html( $plan['intro_body'] ) ); ?></p>
+				<?php endif; ?>
 
+				<?php if ( ! empty( $plan['purposes'] ) ) : ?>
 					<div class="grid grid--3" style="margin-top:28px;">
-						<div class="card purpose-card">
-							<span class="purpose-icon purpose-icon--safe" aria-hidden="true"></span>
-							<h3>建物を長く安全に</h3>
-							<p>外壁や防水の劣化を放置せず、雨漏りや事故を防いで、安心して暮らせる状態を保ちます。</p>
-						</div>
-						<div class="card purpose-card">
-							<span class="purpose-icon purpose-icon--value" aria-hidden="true"></span>
-							<h3>資産価値を守る</h3>
-							<p>計画的に修繕することで、マンションの資産としての価値が下がるのを防ぎます。</p>
-						</div>
-						<div class="card purpose-card">
-							<span class="purpose-icon purpose-icon--home" aria-hidden="true"></span>
-							<h3>快適な住環境</h3>
-							<p>美観や住み心地を維持し、これからも気持ちよく暮らせる環境を整えます。</p>
-						</div>
+						<?php foreach ( $plan['purposes'] as $i => $p ) : ?>
+							<div class="card purpose-card">
+								<span class="purpose-icon <?php echo esc_attr( $mrc_icons[ $i % count( $mrc_icons ) ] ); ?>" aria-hidden="true"></span>
+								<h3><?php echo esc_html( $p['title'] ); ?></h3>
+								<p><?php echo nl2br( esc_html( $p['desc'] ) ); ?></p>
+							</div>
+						<?php endforeach; ?>
 					</div>
-				</section>
+				<?php endif; ?>
+			</section>
 
-				<section style="margin-bottom:48px;">
-					<div class="section-heading"><h2>主な工事の対象</h2></div>
-					<p style="margin-bottom:16px;">大規模修繕工事では、主に次のような箇所をまとめて点検・修繕します。（対象箇所は建物により異なります）</p>
+			<section style="margin-bottom:48px;">
+				<?php if ( '' !== trim( (string) $plan['target_heading'] ) ) : ?>
+					<div class="section-heading"><h2><?php echo esc_html( $plan['target_heading'] ); ?></h2></div>
+				<?php endif; ?>
+				<?php if ( '' !== trim( (string) $plan['target_intro'] ) ) : ?>
+					<p style="margin-bottom:16px;"><?php echo nl2br( esc_html( $plan['target_intro'] ) ); ?></p>
+				<?php endif; ?>
+				<?php if ( ! empty( $plan['targets'] ) ) : ?>
 					<ul class="spec-tags">
-						<li>外壁塗装</li>
-						<li>防水工事（屋上・バルコニー）</li>
-						<li>鉄部塗装</li>
-						<li>タイル補修</li>
-						<li>シーリング打ち替え</li>
-						<li>給排水設備</li>
+						<?php foreach ( $plan['targets'] as $t ) : ?>
+							<li><?php echo esc_html( $t ); ?></li>
+						<?php endforeach; ?>
 					</ul>
-				</section>
-			<?php endif; ?>
+				<?php endif; ?>
+			</section>
 
 			<!-- 説明会の資料（機能部品・常時表示） -->
-			<section<?php echo mrc_has_page_body() ? '' : ' style="margin-bottom:48px;"'; ?>>
+			<section style="margin-bottom:48px;">
 				<div class="section-heading"><h2>くわしい内容は「説明会の資料」で</h2></div>
 				<p style="margin-bottom:16px;">工事の対象箇所や具体的な内容は、調査・診断や説明会の資料にまとめています。下記からダウンロードいただけます（いずれもPDF）。</p>
 				<div class="card" style="padding:8px 16px;">
@@ -106,56 +105,28 @@ get_header();
 				<p style="margin-top:16px;"><a href="<?php echo esc_url( get_post_type_archive_link( 'document' ) ); ?>" class="cta-link">資料ダウンロード一覧へ</a></p>
 			</section>
 
-			<?php if ( ! mrc_has_page_body() ) : ?>
-				<!-- 工事の流れ（既定表示時のみ・従来どおり最後に配置） -->
-				<section>
-					<div class="section-heading"><h2>工事の流れ</h2></div>
+			<?php if ( ! empty( $plan['steps'] ) || '' !== trim( (string) $plan['flow_heading'] ) ) : ?>
+			<section>
+				<?php if ( '' !== trim( (string) $plan['flow_heading'] ) ) : ?>
+					<div class="section-heading"><h2><?php echo esc_html( $plan['flow_heading'] ); ?></h2></div>
+				<?php endif; ?>
+				<?php if ( ! empty( $plan['steps'] ) ) : ?>
 					<ol class="process-steps">
-						<li class="process-step">
-							<span class="process-step__num">1</span>
-							<div class="process-step__body">
-								<h3 class="process-step__title">調査・診断</h3>
-								<p class="process-step__desc">専門家（設計監理者）が建物の状態を詳しく調べ、劣化の程度を診断します。</p>
-							</div>
-						</li>
-						<li class="process-step">
-							<span class="process-step__num">2</span>
-							<div class="process-step__body">
-								<h3 class="process-step__title">改修設計</h3>
-								<p class="process-step__desc">調査・診断の結果をもとに、直す箇所や工事の方法・仕様を図面にまとめ、工事の内容を固めます。</p>
-							</div>
-						</li>
-						<li class="process-step">
-							<span class="process-step__num">3</span>
-							<div class="process-step__body">
-								<h3 class="process-step__title">住民説明会</h3>
-								<p class="process-step__desc">調査の結果や工事の進め方を、居住者の皆さまにわかりやすくご説明します。</p>
-							</div>
-						</li>
-						<li class="process-step">
-							<span class="process-step__num">4</span>
-							<div class="process-step__body">
-								<h3 class="process-step__title">施工会社の選定</h3>
-								<p class="process-step__desc">複数の会社を比較・検討し、工事を担当する施工会社を選びます。</p>
-							</div>
-						</li>
-						<li class="process-step">
-							<span class="process-step__num">5</span>
-							<div class="process-step__body">
-								<h3 class="process-step__title">総会での決議</h3>
-								<p class="process-step__desc">工事請負契約の承認を総会で決議し、工事が正式に決まります。</p>
-							</div>
-						</li>
-						<li class="process-step">
-							<span class="process-step__num">6</span>
-							<div class="process-step__body">
-								<h3 class="process-step__title">着工</h3>
-								<p class="process-step__desc">準備が整い次第、工事を開始します。工程はお知らせと掲示板でご案内します。</p>
-							</div>
-						</li>
+						<?php foreach ( $plan['steps'] as $i => $s ) : ?>
+							<li class="process-step">
+								<span class="process-step__num"><?php echo (int) ( $i + 1 ); ?></span>
+								<div class="process-step__body">
+									<h3 class="process-step__title"><?php echo esc_html( $s['title'] ); ?></h3>
+									<p class="process-step__desc"><?php echo nl2br( esc_html( $s['desc'] ) ); ?></p>
+								</div>
+							</li>
+						<?php endforeach; ?>
 					</ol>
-					<p class="form-hint" style="margin-top:16px;">※ 着工の時期は決まり次第お知らせします。</p>
-				</section>
+				<?php endif; ?>
+				<?php if ( '' !== trim( (string) $plan['flow_note'] ) ) : ?>
+					<p class="form-hint" style="margin-top:16px;"><?php echo esc_html( $plan['flow_note'] ); ?></p>
+				<?php endif; ?>
+			</section>
 			<?php endif; ?>
 		</div>
 	</article>
