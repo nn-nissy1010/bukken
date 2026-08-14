@@ -428,6 +428,48 @@ function mrc_add_admin_pages() {
 	add_submenu_page( 'mrc-property', '物件基本設定', '物件基本設定', 'manage_options', 'mrc-property', 'mrc_render_property_page' );
 	add_submenu_page( 'mrc-property', 'ご意見の窓口 通知先設定', '通知先設定', 'manage_options', 'mrc-contact', 'mrc_render_contact_page' );
 	add_submenu_page( 'mrc-property', 'ログイン前トップ 編集', 'ログイン前トップ 編集', 'manage_options', 'mrc-first-faq', 'mrc_render_first_faq_page' );
+	add_submenu_page( 'mrc-property', 'ページ本文の編集', 'ページ本文の編集', 'edit_pages', 'mrc-edit-pages', 'mrc_render_edit_pages_page' );
+}
+
+/** 本文を編集できる固定ページ（スラッグ => ラベル）。 */
+function mrc_editable_body_pages() {
+	return array(
+		'plan'           => '工事の計画',
+		'member'         => '会員トップ',
+		'contact'        => 'ご意見の窓口',
+		'contact-public' => 'お問い合わせ（ログイン前）',
+	);
+}
+
+/** ページ本文の編集画面（各ページの編集へのリンク集。削除・新規追加はさせない）。 */
+function mrc_render_edit_pages_page() {
+	?>
+	<div class="wrap">
+		<h1>ページ本文の編集</h1>
+		<p>各ページの本文（説明文）を編集できます。「本文を編集」を開き、<strong>本文欄</strong>を書き換えて更新してください。</p>
+		<table class="widefat striped" style="max-width:820px;margin-top:12px;">
+			<thead><tr><th>ページ</th><th style="width:260px;">操作</th></tr></thead>
+			<tbody>
+			<?php
+			foreach ( mrc_editable_body_pages() as $slug => $label ) :
+				$page = get_page_by_path( $slug );
+				if ( ! $page ) {
+					continue;
+				}
+				?>
+				<tr>
+					<td><strong><?php echo esc_html( $label ); ?></strong><br><span class="description">/<?php echo esc_html( $slug ); ?>/</span></td>
+					<td>
+						<a class="button button-primary" href="<?php echo esc_url( get_edit_post_link( $page->ID ) ); ?>">本文を編集</a>
+						<a class="button" href="<?php echo esc_url( get_permalink( $page->ID ) ); ?>" target="_blank" rel="noopener">表示</a>
+					</td>
+				</tr>
+			<?php endforeach; ?>
+			</tbody>
+		</table>
+		<p class="description" style="margin-top:12px;">※ 見た目の作り込み（工事の計画のカード等）はそのまま、文章だけを編集できます。本文を空にすると標準の説明文に戻ります。ページの削除・新規追加はできません（誤操作防止）。</p>
+	</div>
+	<?php
 }
 add_action( 'admin_menu', 'mrc_add_admin_pages' );
 
