@@ -131,7 +131,7 @@ npx @wordpress/env run cli wp <command> --url=localhost:8888/house1   # wp-cli
 - **アップロード上限**：マルチサイト既定1.5MB（`fileupload_maxk`）では資料PDF・メインビジュアルに不足するため、`inc/admin.php` の `mrc_max_upload_kb()` が `site_option_fileupload_maxk` を約30MBに底上げ（PHPの `upload_max_filesize`／`post_max_size` を超えないようクランプ）。画像・PDF共通の単一上限（種別ごとの個別上限は不可）。
 - **「はじめての方へ」FAQ**：ログイン前トップの当該セクションは `mrc_first_faqs`（物件ごとのオプション）で編集。管理画面「物件基本設定›はじめての方へ 編集」で行の追加・削除。未設定は `mrc_default_first_faqs()` の4問を既定表示、全削除でセクション非表示（`front-page.php` が `mrc_get_first_faqs()` を出力・回答は改行対応）。雛形で設定すればNS Clonerで複製先に引き継がれる。
 - **固定ページ本文の差し替え**：`page-plan.php`／`page-member.php`／`page-contact.php`／`page-contact-public.php` は、固定ページ本文が入力されていればそれを表示、未入力なら従来の定型文（既定）を表示する（`inc/setup.php` の `mrc_has_page_body()`／`mrc_the_page_body()`）。資料リスト・お知らせ一覧・問い合わせフォーム等の機能部品は本文と別に常時表示。member はダッシュボード型のため、本文は冒頭の案内ブロックとして任意表示。ブロックエディタは無効（クラシックエディタ）なので本文は段落主体になる。
-- **標準説明の初期投入**：各ページの標準説明は `inc/setup.php` の `mrc_standard_page_content($slug)` が単一の情報源（見出し・段落・箇条書きの編集しやすいHTML）。`deploy/seed-standard-page-content.php`（冪等・本文が空のページのみ投入）で固定ページ本文に流し込み、各物件で編集して差し替える運用。雛形に投入しておけばNS Clonerで複製先に引き継がれる。テンプレート側の定型文は本文を空にしたときのフォールバックとして残す。
+- **標準説明の初期投入**：各ページの標準説明は `inc/setup.php` の `mrc_standard_page_content($slug)` が単一の情報源。`plan` は**見た目そのまま**（目的カード・対象タグ・工程ステップ）を再現したHTML。目的カードのアイコンは**CSS(mask)で描画**（`.purpose-icon--safe/--value/--home`）し、本文にSVGを置かないため**編集者(非スーパー管理者)が保存してもKSESで崩れない**。`deploy/seed-standard-page-content.php`（冪等・本文が空のページのみ・plan/contact/contact-public が対象、member は除外）で固定ページ本文に流し込み、各物件で編集して差し替える運用。雛形に投入すればNS Clonerで複製先に引き継がれる。テンプレート側の定型文は本文を空にしたときのフォールバックとして残す（アイコンは同じCSSクラス）。
 
 ### 管理画面の整理（`inc/admin.php`）
 - コメント全面無効化、不要な管理メニュー・ダッシュボードウィジェット撤去、MRC向け案内＋クイックリンクに置換。
