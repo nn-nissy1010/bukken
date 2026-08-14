@@ -63,7 +63,7 @@ $st = $step_state[ $stage ];
 		<div class="container container--narrow">
 			<div class="page-intro">
 				<h1>お問い合わせ</h1>
-				<p>ログイン・IDについてのお問い合わせ窓口です。工事や計画に関するご質問は、ログイン後の「ご意見の窓口」からお願いします。</p>
+				<?php if ( mrc_has_page_body() ) { mrc_the_page_body(); } else { ?><p>ログイン・IDについてのお問い合わせ窓口です。工事や計画に関するご質問は、ログイン後の「ご意見の窓口」からお願いします。</p><?php } ?>
 			</div>
 
 			<div class="panel card--pad-lg">

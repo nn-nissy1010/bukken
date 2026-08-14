@@ -90,3 +90,23 @@ function mrc_hide_site_icon_setting() {
 	echo "<style>.site-icon-section{display:none !important;}</style>\n";
 }
 add_action( 'admin_head-options-general.php', 'mrc_hide_site_icon_setting' );
+
+/**
+ * 固定ページ本文（編集可能）に関するテンプレート用ヘルパー。
+ * 各ページテンプレートは「本文が入力されていればそれを表示、未入力なら
+ * 従来の定型文（既定）を表示」する形で、本文をまるごと差し替えられるようにする。
+ */
+
+/** 現在の固定ページに本文が入力されているか。 */
+function mrc_has_page_body() {
+	$post = get_queried_object();
+	return ( $post instanceof WP_Post ) && '' !== trim( (string) $post->post_content );
+}
+
+/** 現在の固定ページ本文を整形して出力（the_content 相当：wpautop・ショートコード適用）。 */
+function mrc_the_page_body() {
+	$post = get_queried_object();
+	if ( $post instanceof WP_Post ) {
+		echo apply_filters( 'the_content', $post->post_content );
+	}
+}

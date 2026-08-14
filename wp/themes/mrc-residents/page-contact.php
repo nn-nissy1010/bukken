@@ -60,7 +60,7 @@ $st = $step_state[ $stage ];
 		<div class="container container--narrow">
 			<div class="page-intro">
 				<h1>ご意見・お問い合わせ</h1>
-				<p>ご質問・ご意見をお送りください。内容の「種別」に応じて、担当の窓口へお届けします。</p>
+				<?php if ( mrc_has_page_body() ) { mrc_the_page_body(); } else { ?><p>ご質問・ご意見をお送りください。内容の「種別」に応じて、担当の窓口へお届けします。</p><?php } ?>
 			</div>
 
 			<div class="panel card--pad-lg">

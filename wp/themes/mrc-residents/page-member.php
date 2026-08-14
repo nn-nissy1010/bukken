@@ -20,6 +20,15 @@ function mrc_news_badge_class( $slug ) {
 ?>
 
 <main>
+	<!-- 会員トップの案内文（固定ページ本文が入力されていれば表示） -->
+	<?php if ( mrc_has_page_body() ) : ?>
+	<section class="section section--tight">
+		<div class="container">
+			<div class="card card--pad-lg page-content"><?php mrc_the_page_body(); ?></div>
+		</div>
+	</section>
+	<?php endif; ?>
+
 	<!-- 固定サマリー -->
 	<?php if ( mrc_page_is_public( 'plan' ) ) : ?>
 	<section class="section section--tight">
