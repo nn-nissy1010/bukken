@@ -130,17 +130,6 @@ function mrc_readiness_items() {
 		'url'   => admin_url( 'edit.php?post_type=news' ),
 	);
 
-	// 工事の計画ページ本文
-	$plan      = get_page_by_path( 'plan' );
-	$plan_done = $plan && '' !== trim( wp_strip_all_tags( (string) $plan->post_content ) );
-	$plan_url  = $plan ? get_edit_post_link( $plan->ID, '' ) : '';
-	$items[]   = array(
-		'done'  => $plan_done,
-		'label' => '「工事の計画」ページの本文',
-		'hint'  => $plan_done ? '入力済み' : '空のまま',
-		'url'   => $plan_url ? $plan_url : admin_url( 'edit.php?post_type=page' ),
-	);
-
 	return $items;
 }
 
